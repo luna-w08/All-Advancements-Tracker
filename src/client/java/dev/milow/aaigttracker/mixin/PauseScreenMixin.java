@@ -54,7 +54,7 @@ public abstract class PauseScreenMixin extends Screen {
 
         this.addRenderableWidget(Button.builder(
                         Component.translatable("screen.aaigttracker.pause_button"),
-                        button -> Minecraft.getInstance().setScreen(
+                        button -> Minecraft.getInstance().setScreenAndShow(
                                 new AdvancementTrackerScreen(AllAdvancementsIgtTrackerClient.getTrackerManager())
                         )
                 )

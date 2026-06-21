@@ -7,7 +7,9 @@
   ],
   "client": [
     "ClientAdvancementsAccessor",
+    "FogRendererMixin",
     "GuiGraphicsExtractorAccessor",
+    "LivingEntityDarknessMixin",
     "PauseScreenMixin"
   ],
   "injectors": {

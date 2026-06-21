@@ -5,6 +5,7 @@ import dev.milow.aaigttracker.AllAdvancementsIgtTracker;
 import dev.milow.aaigttracker.client.data.TrackerDataRepository;
 import dev.milow.aaigttracker.client.manager.AdvancementTrackerManager;
 import dev.milow.aaigttracker.client.model.CompletionVisibilityMode;
+import dev.milow.aaigttracker.client.model.MenuBackgroundColor;
 import dev.milow.aaigttracker.client.model.TrackerUiState;
 import dev.milow.aaigttracker.client.model.WorldKey;
 import dev.milow.aaigttracker.client.screen.AdvancementTrackerScreen;
@@ -26,6 +27,9 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
     private static KeyMapping cycleVisibilityModeKey;
     private static final Map<WorldKey, TrackerUiState> trackerUiStates = new HashMap<>();
     private static final WaypointService waypointService = new WaypointService();
+    private static MenuBackgroundColor menuBackgroundColor = MenuBackgroundColor.CLASSIC;
+    private static boolean noFogEnabled;
+    private static boolean noDarknessEnabled;
     private static UUID observedPlayerId;
     private static boolean deathWaypointRecorded;
 
@@ -59,10 +63,10 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
                     continue;
                 }
 
-                if (client.screen instanceof AdvancementTrackerScreen) {
-                    client.setScreen(null);
+                if (client.gui.screen() instanceof AdvancementTrackerScreen) {
+                    client.setScreenAndShow(null);
                 } else {
-                    client.setScreen(new AdvancementTrackerScreen(trackerManager));
+                    client.setScreenAndShow(new AdvancementTrackerScreen(trackerManager));
                 }
             }
 
@@ -84,15 +88,49 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
             return;
         }
 
+        setCompletionVisibilityMode(worldKey, getTrackerUiState(worldKey).completionVisibilityMode().next());
+    }
+
+    public static void setCompletionVisibilityMode(WorldKey worldKey, CompletionVisibilityMode mode) {
+        if (worldKey == null || mode == null) {
+            return;
+        }
+
         TrackerUiState currentState = getTrackerUiState(worldKey);
         trackerUiStates.put(
                 worldKey,
                 new TrackerUiState(
-                        currentState.completionVisibilityMode().next(),
+                        mode,
                         currentState.lastTrackerRootId(),
                         currentState.lastSelectedAdvancementId()
                 )
         );
+    }
+
+    public static MenuBackgroundColor getMenuBackgroundColor() {
+        return menuBackgroundColor;
+    }
+
+    public static void setMenuBackgroundColor(MenuBackgroundColor color) {
+        if (color != null) {
+            menuBackgroundColor = color;
+        }
+    }
+
+    public static boolean isNoFogEnabled() {
+        return noFogEnabled;
+    }
+
+    public static void toggleNoFog() {
+        noFogEnabled = !noFogEnabled;
+    }
+
+    public static boolean isNoDarknessEnabled() {
+        return noDarknessEnabled;
+    }
+
+    public static void toggleNoDarkness() {
+        noDarknessEnabled = !noDarknessEnabled;
     }
 
     public static KeyMapping getCycleVisibilityModeKey() {

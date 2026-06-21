@@ -9,6 +9,7 @@ import dev.milow.aaigttracker.client.model.AdvancementSnapshot;
 import dev.milow.aaigttracker.client.model.CompletionVisibilityMode;
 import dev.milow.aaigttracker.client.model.CriterionSnapshot;
 import dev.milow.aaigttracker.client.model.ItemProgressSnapshot;
+import dev.milow.aaigttracker.client.model.MenuBackgroundColor;
 import dev.milow.aaigttracker.client.model.RequirementGroupSnapshot;
 import dev.milow.aaigttracker.client.model.TrackerUiState;
 import dev.milow.aaigttracker.client.model.WorldKey;
@@ -66,6 +67,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
@@ -129,6 +131,15 @@ public final class AdvancementTrackerScreen extends Screen {
     );
     private static final double MARQUEE_PIXELS_PER_MILLISECOND = 0.045D;
     private static final int MARQUEE_LOOP_GAP = 20;
+    private static final int SETTINGS_BUTTON_WIDTH = 68;
+    private static final int SETTINGS_BUTTON_HEIGHT = 18;
+    private static final int SETTINGS_PANEL_WIDTH = 292;
+    private static final int SETTINGS_PANEL_HEIGHT = 126;
+    private static final int SETTINGS_PANEL_PADDING = 10;
+    private static final int SETTINGS_SEGMENT_HEIGHT = 18;
+    private static final int SETTINGS_SWATCH_SIZE = 16;
+    private static final int SETTINGS_SWATCH_GAP = 7;
+    private static final int SETTINGS_TOGGLE_HEIGHT = 16;
     private static final Identifier ITEMS_TAB_ID = Identifier.fromNamespaceAndPath("aaigttracker", "items");
     private static final Identifier WAYPOINTS_TAB_ID = Identifier.fromNamespaceAndPath("aaigttracker", "waypoints");
     private static final int TEXT_PRIMARY = 0xFFFFF8EE;
@@ -161,10 +172,14 @@ public final class AdvancementTrackerScreen extends Screen {
     private List<TabButton> renderedTabButtons = List.of();
     private List<TileHitbox> renderedTileHitboxes = List.of();
     private List<WaypointActionHitbox> renderedWaypointActionHitboxes = List.of();
+    private List<SettingsActionHitbox> renderedSettingsActionHitboxes = List.of();
     private List<RequirementHitbox> renderedRequirementHitboxes = List.of();
     private RequirementViewport renderedRequirementViewport;
     private PreviewOverlay previewOverlay;
     private WaypointInputOverlay waypointInputOverlay;
+    private boolean settingsMenuOpen;
+    private Rect settingsButtonRect;
+    private Rect settingsPanelRect;
     private Identifier modalBiomePreviewId;
     private double modalBiomeYaw = IslandCapturePreviewCache.DEFAULT_YAW;
     private double modalBiomePitch = pitchForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
@@ -212,9 +227,11 @@ public final class AdvancementTrackerScreen extends Screen {
         this.refreshData();
         this.currentRenderMillis = System.currentTimeMillis();
         this.extractTransparentBackground(guiGraphics);
-        guiGraphics.fill(0, 0, this.width, this.height, 0x92321818);
+        MenuBackgroundColor backgroundColor = this.menuBackgroundColor();
+        guiGraphics.fill(0, 0, this.width, this.height, backgroundColor.screenColor());
 
         guiGraphics.text(this.font, this.title, OUTER_PADDING, HEADER_Y, TEXT_HEADER, false);
+        this.renderSettingsButton(guiGraphics, mouseX, mouseY);
 
         Component countComponent = Component.translatable(
                 "screen.aaigttracker.complete_count",
@@ -251,13 +268,14 @@ public final class AdvancementTrackerScreen extends Screen {
         this.boardWidth = this.width - OUTER_PADDING * 2;
         this.boardHeight = this.height - BOARD_TOP - OUTER_PADDING;
 
-        guiGraphics.fill(this.boardX, this.boardY, this.boardX + this.boardWidth, this.boardY + this.boardHeight, 0x99522A2A);
+        guiGraphics.fill(this.boardX, this.boardY, this.boardX + this.boardWidth, this.boardY + this.boardHeight, backgroundColor.boardColor());
         guiGraphics.outline(this.boardX, this.boardY, this.boardWidth, this.boardHeight, 0xC48E6565);
 
         if (this.cachedTabs.isEmpty()) {
             this.renderedTabButtons = List.of();
             this.renderedTileHitboxes = List.of();
             this.renderedWaypointActionHitboxes = List.of();
+            this.renderedSettingsActionHitboxes = new ArrayList<>();
             this.renderedRequirementHitboxes = List.of();
             this.renderedRequirementViewport = null;
             Component emptyMessage = this.cachedEntries.isEmpty()
@@ -270,6 +288,9 @@ public final class AdvancementTrackerScreen extends Screen {
                     this.boardY + this.boardHeight / 2 - 4,
                     TEXT_COUNT
             );
+            if (this.settingsMenuOpen) {
+                this.renderSettingsMenu(guiGraphics, mouseX, mouseY);
+            }
             super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
             return;
         }
@@ -279,12 +300,16 @@ public final class AdvancementTrackerScreen extends Screen {
         BoardTab activeTab = this.getActiveTab();
         if (activeTab == null) {
             this.renderedRequirementHitboxes = List.of();
+            this.renderedSettingsActionHitboxes = new ArrayList<>();
             this.renderedRequirementViewport = null;
+            if (this.settingsMenuOpen) {
+                this.renderSettingsMenu(guiGraphics, mouseX, mouseY);
+            }
             super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
             return;
         }
 
-        boolean modalOpen = this.previewOverlay != null || this.waypointInputOverlay != null;
+        boolean modalOpen = this.previewOverlay != null || this.waypointInputOverlay != null || this.settingsMenuOpen;
         int interactionMouseX = !modalOpen ? mouseX : Integer.MIN_VALUE / 4;
         int interactionMouseY = !modalOpen ? mouseY : Integer.MIN_VALUE / 4;
         int contentX = this.boardX + BOARD_INNER_PADDING;
@@ -351,6 +376,7 @@ public final class AdvancementTrackerScreen extends Screen {
 
         this.renderedRequirementHitboxes = new ArrayList<>();
         this.renderedWaypointActionHitboxes = new ArrayList<>();
+        this.renderedSettingsActionHitboxes = new ArrayList<>();
         if (detailHeight > 0) {
             BoardEntry renderedDetailEntry = hoveredTile != null ? hoveredTile.entry() : detailEntry;
             this.renderDetailPanel(guiGraphics, renderedDetailEntry, contentX, detailY, contentWidth, detailHeight, interactionMouseX, interactionMouseY);
@@ -369,6 +395,9 @@ public final class AdvancementTrackerScreen extends Screen {
                 this.renderWaypointInputOverlay(guiGraphics);
             }
         }
+        if (this.settingsMenuOpen && this.previewOverlay == null && this.waypointInputOverlay == null) {
+            this.renderSettingsMenu(guiGraphics, mouseX, mouseY);
+        }
 
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
     }
@@ -378,7 +407,7 @@ public final class AdvancementTrackerScreen extends Screen {
         int key = event.key();
         KeyMapping openTrackerKey = AllAdvancementsIgtTrackerClient.getOpenTrackerKey();
         if (openTrackerKey != null && openTrackerKey.matches(event)) {
-            this.minecraft.setScreen(null);
+            this.minecraft.setScreenAndShow(null);
             return true;
         }
 
@@ -410,6 +439,13 @@ public final class AdvancementTrackerScreen extends Screen {
             if (key == GLFW.GLFW_KEY_BACKSPACE) {
                 this.backspaceWaypointInput();
                 return true;
+            }
+            return true;
+        }
+
+        if (this.settingsMenuOpen) {
+            if (key == GLFW.GLFW_KEY_ESCAPE) {
+                this.settingsMenuOpen = false;
             }
             return true;
         }
@@ -481,6 +517,10 @@ public final class AdvancementTrackerScreen extends Screen {
             return true;
         }
 
+        if (this.settingsMenuOpen) {
+            return true;
+        }
+
         if (this.renderedRequirementViewport != null
                 && this.renderedRequirementViewport.maxScroll() > 0
                 && this.renderedRequirementViewport.contains(mouseX, mouseY)) {
@@ -522,6 +562,27 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         if (this.waypointInputOverlay != null) {
+            return true;
+        }
+
+        if (this.settingsButtonRect != null && this.settingsButtonRect.contains(event.x(), event.y())) {
+            this.settingsMenuOpen = !this.settingsMenuOpen;
+            return true;
+        }
+
+        if (this.settingsMenuOpen) {
+            for (SettingsActionHitbox hitbox : this.renderedSettingsActionHitboxes) {
+                if (hitbox.rect().contains(event.x(), event.y())) {
+                    this.activateSettingsAction(hitbox);
+                    return true;
+                }
+            }
+
+            if (this.settingsPanelRect != null && this.settingsPanelRect.contains(event.x(), event.y())) {
+                return true;
+            }
+
+            this.settingsMenuOpen = false;
             return true;
         }
 
@@ -715,7 +776,7 @@ public final class AdvancementTrackerScreen extends Screen {
             int width = this.font.width(label) + 34;
             boolean active = tab.rootId().equals(this.activeRootId);
             boolean hovered = inside(mouseX, mouseY, cursorX, tabY, width, TAB_HEIGHT);
-            int background = active ? 0xD48C6B2A : hovered ? 0xC5724646 : 0x9B603737;
+            int background = active ? this.menuBackgroundColor().activeColor() : hovered ? 0xC5724646 : 0x9B603737;
             int border = active ? 0xFFF0D3A3 : 0xB1855C5C;
 
             guiGraphics.fill(cursorX, tabY, cursorX + width, tabY + TAB_HEIGHT, background);
@@ -739,6 +800,157 @@ public final class AdvancementTrackerScreen extends Screen {
         );
 
         return List.copyOf(buttons);
+    }
+
+    private void renderSettingsButton(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        int x = this.width - OUTER_PADDING - SETTINGS_BUTTON_WIDTH;
+        int y = HEADER_Y - 2;
+        this.settingsButtonRect = new Rect(x, y, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT);
+        boolean hovered = this.settingsButtonRect.contains(mouseX, mouseY);
+        int background = this.settingsMenuOpen ? this.menuBackgroundColor().activeColor() : hovered ? 0xC5724646 : 0x9B603737;
+        guiGraphics.fill(x, y, x + SETTINGS_BUTTON_WIDTH, y + SETTINGS_BUTTON_HEIGHT, background);
+        guiGraphics.outline(x, y, SETTINGS_BUTTON_WIDTH, SETTINGS_BUTTON_HEIGHT, this.settingsMenuOpen || hovered ? 0xFFF0D3A3 : 0xB1855C5C);
+        guiGraphics.centeredText(
+                this.font,
+                Component.translatable("screen.aaigttracker.settings"),
+                x + SETTINGS_BUTTON_WIDTH / 2,
+                y + 5,
+                TEXT_PRIMARY
+        );
+    }
+
+    private void renderSettingsMenu(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+        this.renderedSettingsActionHitboxes.clear();
+        int panelX = this.width - OUTER_PADDING - SETTINGS_PANEL_WIDTH;
+        int panelY = HEADER_Y + SETTINGS_BUTTON_HEIGHT + 5;
+        this.settingsPanelRect = new Rect(panelX, panelY, SETTINGS_PANEL_WIDTH, SETTINGS_PANEL_HEIGHT);
+        int panelRight = panelX + SETTINGS_PANEL_WIDTH;
+        MenuBackgroundColor backgroundColor = this.menuBackgroundColor();
+
+        guiGraphics.fill(panelX, panelY, panelRight, panelY + SETTINGS_PANEL_HEIGHT, backgroundColor.panelColor() | 0xE0000000);
+        guiGraphics.outline(panelX, panelY, SETTINGS_PANEL_WIDTH, SETTINGS_PANEL_HEIGHT, 0xFFF0D3A3);
+        guiGraphics.text(
+                this.font,
+                Component.translatable("screen.aaigttracker.settings.title"),
+                panelX + SETTINGS_PANEL_PADDING,
+                panelY + 7,
+                TEXT_HEADER,
+                false
+        );
+
+        int contentX = panelX + SETTINGS_PANEL_PADDING;
+        int contentWidth = SETTINGS_PANEL_WIDTH - SETTINGS_PANEL_PADDING * 2;
+        int rowY = panelY + 24;
+        guiGraphics.text(
+                this.font,
+                Component.translatable("screen.aaigttracker.settings.visibility"),
+                contentX,
+                rowY + 5,
+                TEXT_MUTED,
+                false
+        );
+
+        int segmentsX = contentX + 70;
+        int segmentGap = 4;
+        int segmentWidth = (panelRight - SETTINGS_PANEL_PADDING - segmentsX - segmentGap * 2) / 3;
+        CompletionVisibilityMode[] modes = CompletionVisibilityMode.values();
+        for (int index = 0; index < modes.length; index++) {
+            CompletionVisibilityMode mode = modes[index];
+            Rect rect = new Rect(
+                    segmentsX + index * (segmentWidth + segmentGap),
+                    rowY,
+                    segmentWidth,
+                    SETTINGS_SEGMENT_HEIGHT
+            );
+            boolean active = this.visibilityMode() == mode;
+            boolean hovered = rect.contains(mouseX, mouseY);
+            guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.bottom(), active ? backgroundColor.activeColor() : hovered ? 0xC5724646 : 0x9B603737);
+            guiGraphics.outline(rect.x(), rect.y(), rect.width(), rect.height(), active || hovered ? 0xFFF0D3A3 : 0xB1855C5C);
+            guiGraphics.centeredText(
+                    this.font,
+                    Component.literal(this.ellipsize(mode.shortLabel().getString(), rect.width() - 6)),
+                    rect.x() + rect.width() / 2,
+                    rect.y() + 5,
+                    active ? TEXT_HEADER : TEXT_PRIMARY
+            );
+            this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.visibility(rect, mode));
+        }
+
+        rowY += 27;
+        guiGraphics.text(
+                this.font,
+                Component.translatable("screen.aaigttracker.settings.background"),
+                contentX,
+                rowY + 4,
+                TEXT_MUTED,
+                false
+        );
+        int swatchX = contentX + 86;
+        for (MenuBackgroundColor color : MenuBackgroundColor.values()) {
+            Rect rect = new Rect(swatchX, rowY, SETTINGS_SWATCH_SIZE, SETTINGS_SWATCH_SIZE);
+            boolean active = color == backgroundColor;
+            boolean hovered = rect.contains(mouseX, mouseY);
+            guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.bottom(), color.swatchColor());
+            guiGraphics.outline(rect.x(), rect.y(), rect.width(), rect.height(), active || hovered ? 0xFFFFF0DA : 0xB1855C5C);
+            if (active) {
+                guiGraphics.outline(rect.x() - 2, rect.y() - 2, rect.width() + 4, rect.height() + 4, 0xFFF0D3A3);
+            }
+            this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.background(rect, color));
+            swatchX += SETTINGS_SWATCH_SIZE + SETTINGS_SWATCH_GAP;
+        }
+
+        rowY += 25;
+        Rect noFogRect = new Rect(contentX, rowY, contentWidth, SETTINGS_TOGGLE_HEIGHT);
+        this.renderSettingsToggle(
+                guiGraphics,
+                noFogRect,
+                Component.translatable("screen.aaigttracker.settings.no_fog"),
+                AllAdvancementsIgtTrackerClient.isNoFogEnabled(),
+                noFogRect.contains(mouseX, mouseY)
+        );
+        this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(noFogRect, SettingsAction.TOGGLE_NO_FOG));
+
+        rowY += 20;
+        Rect noDarknessRect = new Rect(contentX, rowY, contentWidth, SETTINGS_TOGGLE_HEIGHT);
+        this.renderSettingsToggle(
+                guiGraphics,
+                noDarknessRect,
+                Component.translatable("screen.aaigttracker.settings.no_darkness"),
+                AllAdvancementsIgtTrackerClient.isNoDarknessEnabled(),
+                noDarknessRect.contains(mouseX, mouseY)
+        );
+        this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(noDarknessRect, SettingsAction.TOGGLE_NO_DARKNESS));
+    }
+
+    private void renderSettingsToggle(
+            GuiGraphicsExtractor guiGraphics,
+            Rect rect,
+            Component label,
+            boolean enabled,
+            boolean hovered
+    ) {
+        guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.bottom(), hovered ? 0x526A4545 : 0x33351E1E);
+        int boxSize = 12;
+        int boxX = rect.x() + 1;
+        int boxY = rect.y() + 2;
+        guiGraphics.fill(boxX, boxY, boxX + boxSize, boxY + boxSize, enabled ? this.menuBackgroundColor().activeColor() : 0x8C2A1717);
+        guiGraphics.outline(boxX, boxY, boxSize, boxSize, enabled || hovered ? 0xFFF0D3A3 : 0xB1855C5C);
+        if (enabled) {
+            guiGraphics.centeredText(this.font, Component.literal("X"), boxX + boxSize / 2, boxY + 2, TEXT_HEADER);
+        }
+        guiGraphics.text(this.font, label, boxX + boxSize + 7, rect.y() + 4, enabled ? TEXT_PRIMARY : TEXT_MUTED, false);
+    }
+
+    private void activateSettingsAction(SettingsActionHitbox hitbox) {
+        switch (hitbox.action()) {
+            case SET_VISIBILITY -> {
+                AllAdvancementsIgtTrackerClient.setCompletionVisibilityMode(this.currentWorldKey(), hitbox.visibilityMode());
+                this.refreshData();
+            }
+            case SET_BACKGROUND -> AllAdvancementsIgtTrackerClient.setMenuBackgroundColor(hitbox.backgroundColor());
+            case TOGGLE_NO_FOG -> AllAdvancementsIgtTrackerClient.toggleNoFog();
+            case TOGGLE_NO_DARKNESS -> AllAdvancementsIgtTrackerClient.toggleNoDarkness();
+        }
     }
 
     private HoveredTile renderGrid(
@@ -834,7 +1046,7 @@ public final class AdvancementTrackerScreen extends Screen {
             int mouseY
     ) {
         this.renderedRequirementViewport = null;
-        guiGraphics.fill(x, y, x + width, y + height, 0xA04A2626);
+        guiGraphics.fill(x, y, x + width, y + height, this.menuBackgroundColor().panelColor());
         guiGraphics.outline(x, y, width, height, 0xC0906969);
 
         if (entry == null) {
@@ -1398,6 +1610,10 @@ public final class AdvancementTrackerScreen extends Screen {
         return AllAdvancementsIgtTrackerClient.getCompletionVisibilityMode(this.currentWorldKey());
     }
 
+    private MenuBackgroundColor menuBackgroundColor() {
+        return AllAdvancementsIgtTrackerClient.getMenuBackgroundColor();
+    }
+
     private void rememberCurrentState() {
         AllAdvancementsIgtTrackerClient.rememberTrackerState(
                 this.currentWorldKey(),
@@ -1593,13 +1809,7 @@ public final class AdvancementTrackerScreen extends Screen {
         if (entry instanceof AdvancementBoardEntry advancementEntry) {
             AdvancementSnapshot snapshot = advancementEntry.snapshot();
             if (snapshot.done()) {
-                if (snapshot.hasKnownCompletionTime()) {
-                    String time = formatMillis(snapshot.completionTimeMillis());
-                    return snapshot.completionLocation() == null
-                            ? time
-                            : time + " @ " + snapshot.completionLocation().compactText();
-                }
-                return Component.translatable("screen.aaigttracker.tile.done").getString();
+                return "";
             }
 
             return this.singleLineText(snapshot.description().getString());
@@ -1840,7 +2050,7 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         guiGraphics.fill(0, 0, this.width, this.height, 0x9A160A0A);
-        guiGraphics.fill(layout.panelX(), layout.panelY(), layout.panelRight(), layout.panelBottom(), 0xE64A2626);
+        guiGraphics.fill(layout.panelX(), layout.panelY(), layout.panelRight(), layout.panelBottom(), this.menuBackgroundColor().panelColor() | 0xE0000000);
         guiGraphics.outline(layout.panelX(), layout.panelY(), layout.panelWidth(), layout.panelHeight(), 0xFFF0D3A3);
         guiGraphics.centeredText(this.font, title, this.width / 2, layout.panelY() + 5, TEXT_HEADER);
         if (subtitle != null) {
@@ -2148,7 +2358,7 @@ public final class AdvancementTrackerScreen extends Screen {
                 : Component.translatable("screen.aaigttracker.waypoints.rename_title");
 
         guiGraphics.fill(0, 0, this.width, this.height, 0x9A160A0A);
-        guiGraphics.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xE64A2626);
+        guiGraphics.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, this.menuBackgroundColor().panelColor() | 0xE0000000);
         guiGraphics.outline(panelX, panelY, panelWidth, panelHeight, 0xFFF0D3A3);
         guiGraphics.centeredText(this.font, title, this.width / 2, panelY + 12, TEXT_HEADER);
         guiGraphics.fill(inputX, inputY, inputX + inputWidth, inputY + 20, 0xB02D1717);
@@ -2410,7 +2620,7 @@ public final class AdvancementTrackerScreen extends Screen {
         Quaternionf baseRotation = new Quaternionf()
                 .rotateZ((float) Math.PI)
                 .rotateX((float) Math.toRadians(PREVIEW_CAMERA_X_ROTATION_DEGREES));
-        if (renderState.entityType == EntityType.ENDER_DRAGON && rotating) {
+        if (renderState.entityType == EntityTypes.ENDER_DRAGON && rotating) {
             baseRotation.rotateY((float) Math.toRadians(yaw));
         }
         Quaternionf cameraTilt = new Quaternionf().rotateX((float) Math.toRadians(PREVIEW_CAMERA_X_ROTATION_DEGREES));
@@ -2494,16 +2704,16 @@ public final class AdvancementTrackerScreen extends Screen {
     }
 
     private float modalEntityRenderSize(EntityRenderState renderState, int width, int height) {
-        float widthRatio = renderState.entityType == EntityType.ENDER_DRAGON ? 0.82F : 0.56F;
-        float heightRatio = renderState.entityType == EntityType.ENDER_DRAGON ? 0.72F : 0.76F;
-        float maxSize = renderState.entityType == EntityType.ENDER_DRAGON ? 120.0F : 210.0F;
+        float widthRatio = renderState.entityType == EntityTypes.ENDER_DRAGON ? 0.82F : 0.56F;
+        float heightRatio = renderState.entityType == EntityTypes.ENDER_DRAGON ? 0.72F : 0.76F;
+        float maxSize = renderState.entityType == EntityTypes.ENDER_DRAGON ? 120.0F : 210.0F;
         float widthFit = width * widthRatio / this.entityFitWidth(renderState);
         float heightFit = height * heightRatio / renderState.boundingBoxHeight;
         return Mth.clamp(Math.min(widthFit, heightFit), 18.0F, maxSize);
     }
 
     private float previewVerticalOffset(EntityRenderState renderState, boolean rotating) {
-        if (renderState.entityType == EntityType.ENDER_DRAGON) {
+        if (renderState.entityType == EntityTypes.ENDER_DRAGON) {
             return renderState.boundingBoxHeight * (rotating ? 0.50F : 0.60F);
         }
         if (!rotating) {
@@ -2514,10 +2724,10 @@ public final class AdvancementTrackerScreen extends Screen {
 
     private float entityFitWidth(EntityRenderState renderState) {
         float width = Math.max(0.1F, renderState.boundingBoxWidth);
-        if (renderState.entityType == EntityType.ENDER_DRAGON) {
+        if (renderState.entityType == EntityTypes.ENDER_DRAGON) {
             return width * 1.85F;
         }
-        if (renderState.entityType == EntityType.GHAST || renderState.entityType == EntityType.PHANTOM) {
+        if (renderState.entityType == EntityTypes.GHAST || renderState.entityType == EntityTypes.PHANTOM) {
             return width * 1.35F;
         }
         return width;
@@ -2666,6 +2876,32 @@ public final class AdvancementTrackerScreen extends Screen {
         ADD,
         RENAME,
         DELETE
+    }
+
+    private enum SettingsAction {
+        SET_VISIBILITY,
+        SET_BACKGROUND,
+        TOGGLE_NO_FOG,
+        TOGGLE_NO_DARKNESS
+    }
+
+    private record SettingsActionHitbox(
+            SettingsAction action,
+            Rect rect,
+            CompletionVisibilityMode visibilityMode,
+            MenuBackgroundColor backgroundColor
+    ) {
+        private static SettingsActionHitbox visibility(Rect rect, CompletionVisibilityMode visibilityMode) {
+            return new SettingsActionHitbox(SettingsAction.SET_VISIBILITY, rect, visibilityMode, null);
+        }
+
+        private static SettingsActionHitbox background(Rect rect, MenuBackgroundColor backgroundColor) {
+            return new SettingsActionHitbox(SettingsAction.SET_BACKGROUND, rect, null, backgroundColor);
+        }
+
+        private static SettingsActionHitbox simple(Rect rect, SettingsAction action) {
+            return new SettingsActionHitbox(action, rect, null, null);
+        }
     }
 
     private enum WaypointInputMode {
