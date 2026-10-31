@@ -12,3 +12,6 @@ Licence: All rights reserved; see [LICENSE](LICENSE). Redistribution, including 
 Filter and background settings take effect during the current run. No restart or world reload is required.
 
 Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+
+
+Release version: 1.0-26.2-competitive for Minecraft Java Edition 26.2.

@@ -5,12 +5,12 @@
   "name": "All Advancements IGT Tracker (Competitive)",
   "description": "A Fabric tracker UI for All Advancements speedruns with level-time timestamps.",
   "authors": [
-    "milo-w08"
+    "luna-w08"
   ],
   "contact": {
-    "homepage": "https://github.com/milo-w08/All-Advancements-Tracker",
-    "sources": "https://github.com/milo-w08/All-Advancements-Tracker",
-    "issues": "https://github.com/milo-w08/All-Advancements-Tracker/issues"
+    "homepage": "https://github.com/luna-w08/All-Advancements-Tracker",
+    "sources": "https://github.com/luna-w08/All-Advancements-Tracker",
+    "issues": "https://github.com/luna-w08/All-Advancements-Tracker/issues"
   },
   "license": "All Rights Reserved",
   "environment": "client",
