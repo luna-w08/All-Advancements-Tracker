@@ -38,8 +38,8 @@ content remain subject to their respective owners' rights.
 
 ## Project distribution
 
-This version uses the project's all-rights-reserved notice in `LICENSE` and
-`LICENSE.txt`, with matching Fabric metadata. It grants permission to download,
+This version uses the project's all-rights-reserved notice in `LICENSE`,
+with matching Fabric metadata. It grants permission to download,
 install, and play official releases. Redistribution, including inclusion in
 modpacks, requires prior written permission. The notice is included in release
 and source JARs. Permissions previously granted for older releases are not
