@@ -12,3 +12,6 @@ Licence: All rights reserved; see [LICENSE](LICENSE). Redistribution, including 
 The settings take effect during the current run, including while the tracker GUI is open. No restart or world reload is required.
 
 Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+
+
+Release version: 1.0-26.2-practice for Minecraft Java Edition 26.2.
