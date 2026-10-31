@@ -21,6 +21,7 @@
     "minecraft:husbandry/root"
   ],
   "detailless_advancements": [
+    "minecraft:husbandry/uh_oh",
     "minecraft:nether/distract_piglin",
     "minecraft:story/obtain_armor",
     "minecraft:story/shiny_gear",

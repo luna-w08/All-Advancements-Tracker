@@ -3,7 +3,7 @@ package dev.milow.aaigttracker.client.visual;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
-public record CriterionIcon(ItemStack itemStack, EntityPreviewSpec entityPreviewSpec, BiomePreviewSpec biomePreviewSpec) {
+public record CriterionIcon(ItemStack itemStack, EntityPreviewSpec entityPreviewSpec, BiomeSpriteSpec biomeSpriteSpec) {
     public CriterionIcon {
         itemStack = itemStack == null ? ItemStack.EMPTY : itemStack;
     }
@@ -16,16 +16,16 @@ public record CriterionIcon(ItemStack itemStack, EntityPreviewSpec entityPreview
         return new CriterionIcon(fallbackItemStack == null ? ItemStack.EMPTY : fallbackItemStack.copy(), entityPreviewSpec, null);
     }
 
-    public static CriterionIcon biome(ItemStack fallbackItemStack, BiomePreviewSpec biomePreviewSpec) {
-        return new CriterionIcon(fallbackItemStack == null ? ItemStack.EMPTY : fallbackItemStack.copy(), null, biomePreviewSpec);
+    public static CriterionIcon biome(ItemStack fallbackItemStack, BiomeSpriteSpec biomeSpriteSpec) {
+        return new CriterionIcon(fallbackItemStack == null ? ItemStack.EMPTY : fallbackItemStack.copy(), null, biomeSpriteSpec);
     }
 
     public boolean isEntityPreview() {
         return this.entityPreviewSpec != null;
     }
 
-    public boolean isBiomePreview() {
-        return this.biomePreviewSpec != null && !this.biomePreviewSpec.isEmpty();
+    public boolean isBiomeSprite() {
+        return this.biomeSpriteSpec != null && !this.biomeSpriteSpec.isEmpty();
     }
 
     public boolean isItem() {
@@ -33,7 +33,7 @@ public record CriterionIcon(ItemStack itemStack, EntityPreviewSpec entityPreview
     }
 
     public boolean isEmpty() {
-        return !this.isEntityPreview() && !this.isBiomePreview() && !this.isItem();
+        return !this.isEntityPreview() && !this.isBiomeSprite() && !this.isItem();
     }
 
     public ItemStack copyItemStack() {

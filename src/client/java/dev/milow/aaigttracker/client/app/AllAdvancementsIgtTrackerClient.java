@@ -24,7 +24,6 @@ import org.lwjgl.glfw.GLFW;
 public final class AllAdvancementsIgtTrackerClient implements ClientModInitializer {
     private static AdvancementTrackerManager trackerManager;
     private static KeyMapping openTrackerKey;
-    private static KeyMapping cycleVisibilityModeKey;
     private static final Map<WorldKey, TrackerUiState> trackerUiStates = new HashMap<>();
     private static final WaypointService waypointService = new WaypointService();
     private static MenuBackgroundColor menuBackgroundColor = MenuBackgroundColor.CLASSIC;
@@ -44,13 +43,7 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
         openTrackerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.aaigttracker.open_screen",
                 InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_WORLD_1,
-                trackerCategory
-        ));
-        cycleVisibilityModeKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.aaigttracker.cycle_visibility_mode",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_MINUS,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
                 trackerCategory
         ));
 
@@ -81,14 +74,6 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static CompletionVisibilityMode getCompletionVisibilityMode(WorldKey worldKey) {
         return getTrackerUiState(worldKey).completionVisibilityMode();
-    }
-
-    public static void cycleCompletionVisibilityMode(WorldKey worldKey) {
-        if (worldKey == null) {
-            return;
-        }
-
-        setCompletionVisibilityMode(worldKey, getTrackerUiState(worldKey).completionVisibilityMode().next());
     }
 
     public static void setCompletionVisibilityMode(WorldKey worldKey, CompletionVisibilityMode mode) {
@@ -131,10 +116,6 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static void toggleNoDarkness() {
         noDarknessEnabled = !noDarknessEnabled;
-    }
-
-    public static KeyMapping getCycleVisibilityModeKey() {
-        return cycleVisibilityModeKey;
     }
 
     public static KeyMapping getOpenTrackerKey() {

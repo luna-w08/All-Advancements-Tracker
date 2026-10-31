@@ -1,0 +1,339 @@
+{
+  "tool": "OpenAI built-in image_gen",
+  "size": [
+    16,
+    16
+  ],
+  "sprites": [
+    {
+      "biome": "badlands",
+      "file": "minecraft_badlands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for badlands: short orange and red layered terracotta cliffs with one dry shrub."
+    },
+    {
+      "biome": "bamboo_jungle",
+      "file": "minecraft_bamboo_jungle.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for bamboo jungle: a cluster of three slender bamboo stalks with small leaves and a green moss strip."
+    },
+    {
+      "biome": "basalt_deltas",
+      "file": "minecraft_basalt_deltas.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for basalt deltas: three charcoal basalt pinnacles with a little orange lava."
+    },
+    {
+      "biome": "beach",
+      "file": "minecraft_beach.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for beach: a pale sand mound with one reed beside blue surf."
+    },
+    {
+      "biome": "birch_forest",
+      "file": "minecraft_birch_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for birch forest: two small white birch trunks with black marks and green leaf crowns."
+    },
+    {
+      "biome": "cherry_grove",
+      "file": "minecraft_cherry_grove.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for cherry grove: one little brown trunk with a pale pink blossom canopy and pink ground petals."
+    },
+    {
+      "biome": "cold_ocean",
+      "file": "minecraft_cold_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for cold ocean: a dark blue wave with two teal crests and a small kelp sprout."
+    },
+    {
+      "biome": "crimson_forest",
+      "file": "minecraft_crimson_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for crimson forest: a dark red fungus stalk with a broad scarlet cap on red ground."
+    },
+    {
+      "biome": "dark_forest",
+      "file": "minecraft_dark_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for dark forest: two squat dark green oak trees and one tiny red mushroom."
+    },
+    {
+      "biome": "deep_cold_ocean",
+      "file": "minecraft_deep_cold_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for deep cold ocean: a dark navy wave over deep cobalt water with a tiny kelp frond."
+    },
+    {
+      "biome": "deep_dark",
+      "file": "minecraft_deep_dark.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for deep dark: dark teal cave rocks with bright cyan sculk dots and two sensor tendrils."
+    },
+    {
+      "biome": "deep_frozen_ocean",
+      "file": "minecraft_deep_frozen_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for deep frozen ocean: two small cyan icebergs standing in deep midnight blue water."
+    },
+    {
+      "biome": "deep_lukewarm_ocean",
+      "file": "minecraft_deep_lukewarm_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for deep lukewarm ocean: layered deep blue waves with one turquoise seaweed plant."
+    },
+    {
+      "biome": "deep_ocean",
+      "file": "minecraft_deep_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for deep ocean: three stacked dark blue wave curves with a little bright blue highlight."
+    },
+    {
+      "biome": "desert",
+      "file": "minecraft_desert.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for desert: one small cactus and a dry shrub on a golden sand dune."
+    },
+    {
+      "biome": "dripstone_caves",
+      "file": "minecraft_dripstone_caves.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for dripstone caves: two pointed brown stalagmites and a hanging stalactite."
+    },
+    {
+      "biome": "end_barrens",
+      "file": "minecraft_end_barrens.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for end barrens: three low pale yellow end-stone rocks with one dark purple crack."
+    },
+    {
+      "biome": "end_highlands",
+      "file": "minecraft_end_highlands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for end highlands: a tall pale yellow rock with a small branching purple chorus plant."
+    },
+    {
+      "biome": "end_midlands",
+      "file": "minecraft_end_midlands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for end midlands: a low pale yellow rock ridge with a short purple sprout."
+    },
+    {
+      "biome": "eroded_badlands",
+      "file": "minecraft_eroded_badlands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for eroded badlands: two tall narrow red orange terracotta pinnacles with colored stripes."
+    },
+    {
+      "biome": "flower_forest",
+      "file": "minecraft_flower_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for flower forest: one small tree with pink yellow blue flowers at its base."
+    },
+    {
+      "biome": "forest",
+      "file": "minecraft_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for forest: two little broadleaf trees with green crowns and brown trunks."
+    },
+    {
+      "biome": "frozen_ocean",
+      "file": "minecraft_frozen_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for frozen ocean: two flat white ice floes beside a pale cyan ice chunk in blue water."
+    },
+    {
+      "biome": "frozen_peaks",
+      "file": "minecraft_frozen_peaks.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for frozen peaks: a pointed pale cyan mountain topped with white ice."
+    },
+    {
+      "biome": "frozen_river",
+      "file": "minecraft_frozen_river.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for frozen river: a narrow pale blue frozen stream between white banks."
+    },
+    {
+      "biome": "grove",
+      "file": "minecraft_grove.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for grove: two small snowy spruce trees on a strip of snow."
+    },
+    {
+      "biome": "ice_spikes",
+      "file": "minecraft_ice_spikes.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for ice spikes: three thin cyan ice spikes of different heights."
+    },
+    {
+      "biome": "jagged_peaks",
+      "file": "minecraft_jagged_peaks.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for jagged peaks: two sharp gray mountain peaks with little white snow caps."
+    },
+    {
+      "biome": "jungle",
+      "file": "minecraft_jungle.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for jungle: two tropical green trees with hanging vines and a fern."
+    },
+    {
+      "biome": "lukewarm_ocean",
+      "file": "minecraft_lukewarm_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for lukewarm ocean: two vivid azure wave crests with one teal seagrass stem."
+    },
+    {
+      "biome": "lush_caves",
+      "file": "minecraft_lush_caves.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for lush caves: a short mossy stone arch with a hanging vine with two orange berries and one pink bloom."
+    },
+    {
+      "biome": "mangrove_swamp",
+      "file": "minecraft_mangrove_swamp.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for mangrove swamp: a squat green mangrove with red-brown spreading roots in murky teal water."
+    },
+    {
+      "biome": "meadow",
+      "file": "minecraft_meadow.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for meadow: a green hillock with red yellow white tiny wildflowers."
+    },
+    {
+      "biome": "mushroom_fields",
+      "file": "minecraft_mushroom_fields.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for mushroom fields: a red spotted mushroom and a smaller tan mushroom on muted purple ground."
+    },
+    {
+      "biome": "nether_wastes",
+      "file": "minecraft_nether_wastes.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for nether wastes: dark red rocks with a tiny orange flame and a lava crack."
+    },
+    {
+      "biome": "ocean",
+      "file": "minecraft_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for ocean: a low three-crest ocean blue wave with tiny pale foam pixels."
+    },
+    {
+      "biome": "old_growth_birch_forest",
+      "file": "minecraft_old_growth_birch_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for old growth birch forest: a tall slender white birch trunk with black dashes and a compact leafy crown."
+    },
+    {
+      "biome": "old_growth_pine_taiga",
+      "file": "minecraft_old_growth_pine_taiga.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for old growth pine taiga: one tall pine with a bare brown trunk and small dark green triangular crown."
+    },
+    {
+      "biome": "old_growth_spruce_taiga",
+      "file": "minecraft_old_growth_spruce_taiga.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for old growth spruce taiga: one broad tiered dark green spruce with a wide lower canopy on moss."
+    },
+    {
+      "biome": "pale_garden",
+      "file": "minecraft_pale_garden.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for pale garden: a gray-white leaf tree with dark trunk, gray moss, and one tiny orange flower."
+    },
+    {
+      "biome": "plains",
+      "file": "minecraft_plains.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for plains: a few bright green grass tufts with one tiny white wildflower on a flat green strip."
+    },
+    {
+      "biome": "river",
+      "file": "minecraft_river.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for river: a curving blue stream with grassy green banks and two reeds."
+    },
+    {
+      "biome": "savanna",
+      "file": "minecraft_savanna.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for savanna: one slender gray acacia trunk with a flat olive canopy above golden grass."
+    },
+    {
+      "biome": "savanna_plateau",
+      "file": "minecraft_savanna_plateau.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for savanna plateau: one short umbrella acacia on top of a low golden cliff."
+    },
+    {
+      "biome": "small_end_islands",
+      "file": "minecraft_small_end_islands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for small end islands: three separate tiny pale yellow end-stone fragments with a few purple void specks."
+    },
+    {
+      "biome": "snowy_beach",
+      "file": "minecraft_snowy_beach.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for snowy beach: a low white snow bank with a pale sand edge beside cold blue surf."
+    },
+    {
+      "biome": "snowy_plains",
+      "file": "minecraft_snowy_plains.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for snowy plains: a low white snowy bank with a tiny pale green grass tuft."
+    },
+    {
+      "biome": "snowy_slopes",
+      "file": "minecraft_snowy_slopes.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for snowy slopes: a sloping white snow ridge with a little exposed gray stone."
+    },
+    {
+      "biome": "snowy_taiga",
+      "file": "minecraft_snowy_taiga.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for snowy taiga: one blue-green tiered spruce with white snow on its branches."
+    },
+    {
+      "biome": "soul_sand_valley",
+      "file": "minecraft_soul_sand_valley.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for soul sand valley: a short tan bone arch beside one cyan soul flame over brown sand."
+    },
+    {
+      "biome": "sparse_jungle",
+      "file": "minecraft_sparse_jungle.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for sparse jungle: one short tropical tree with a thin crown above green grass and a fern."
+    },
+    {
+      "biome": "stony_peaks",
+      "file": "minecraft_stony_peaks.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for stony peaks: two angular gray stone peaks with beige mineral pixels and no snow."
+    },
+    {
+      "biome": "stony_shore",
+      "file": "minecraft_stony_shore.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for stony shore: a pile of small gray rocks beside a cyan wave."
+    },
+    {
+      "biome": "sulfur_caves",
+      "file": "minecraft_sulfur_caves.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for sulfur caves: a cluster of short yellow sulfur crystals beside a tiny green mineral pool."
+    },
+    {
+      "biome": "sunflower_plains",
+      "file": "minecraft_sunflower_plains.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for sunflower plains: two small yellow sunflower heads with brown centers on slender green stems above a low grass strip."
+    },
+    {
+      "biome": "swamp",
+      "file": "minecraft_swamp.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for swamp: one squat olive tree with a hanging vine beside a little lily pad in muted green water."
+    },
+    {
+      "biome": "taiga",
+      "file": "minecraft_taiga.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for taiga: one dark green triangular spruce tree with a brown trunk on a green moss strip."
+    },
+    {
+      "biome": "the_end",
+      "file": "minecraft_the_end.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for the end: a short black obsidian pillar on pale yellow ground with two violet sparkle pixels."
+    },
+    {
+      "biome": "the_void",
+      "file": "minecraft_the_void.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for the void: a small dim purple crescent with three violet star pixels around empty transparent space."
+    },
+    {
+      "biome": "warm_ocean",
+      "file": "minecraft_warm_ocean.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for warm ocean: two small red and yellow coral branches beside a turquoise wave."
+    },
+    {
+      "biome": "warped_forest",
+      "file": "minecraft_warped_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for warped forest: one teal blue fungus cap on a purple stalk above blue-green ground."
+    },
+    {
+      "biome": "windswept_forest",
+      "file": "minecraft_windswept_forest.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for windswept forest: one wind-bent dark green tree on a low gray rock slope."
+    },
+    {
+      "biome": "windswept_gravelly_hills",
+      "file": "minecraft_windswept_gravelly_hills.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for windswept gravelly hills: a gray gravel mound with a few pebble highlights and one grass tuft."
+    },
+    {
+      "biome": "windswept_hills",
+      "file": "minecraft_windswept_hills.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for windswept hills: two rounded gray hills with a short green grass cap."
+    },
+    {
+      "biome": "windswept_savanna",
+      "file": "minecraft_windswept_savanna.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for windswept savanna: one wind-bent umbrella acacia on a narrow golden rock pinnacle."
+    },
+    {
+      "biome": "wooded_badlands",
+      "file": "minecraft_wooded_badlands.png",
+      "prompt": "Create ONE original microscopic 16x16 game UI pixel sprite. Tiny SIDE VIEW symbolic landscape, not a detailed painting or 3D terrain tile. Transparent background. The entire canvas represents EXACTLY 16 columns and 16 rows of logical square pixels. Very small simple forms with 8 to 12 flat colors, no antialiasing, no gradients, no glossy lighting. Show the logical 16px design enlarged nearest-neighbor if a large canvas is necessary. Silhouette fills most of the canvas. No oval ground disc, thick soil cube, floating island, frame, text, grid lines, watermark or shadow. Reference aesthetic: classic tiny pixel item icons. Original pixel arrangement, not a Minecraft Wiki sprite, not an extracted Minecraft texture. Subject for wooded badlands: one little olive tree on a short layered orange-red terracotta ledge."
+    }
+  ]
+}

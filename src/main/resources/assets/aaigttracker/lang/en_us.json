@@ -1,6 +1,8 @@
 {
+  "screen.aaigttracker.froglight.temperate": "Temperate Frog - Ochre Froglight",
+  "screen.aaigttracker.froglight.warm": "Warm Frog - Pearlescent Froglight",
+  "screen.aaigttracker.froglight.cold": "Cold Frog - Verdant Froglight",
   "key.aaigttracker.open_screen": "Open tracker screen",
-  "key.aaigttracker.cycle_visibility_mode": "Cycle tracker filter",
   "key.category.aaigttracker.tracker": "All Advancements Tracker",
   "key.categories.aaigttracker.tracker": "All Advancements Tracker",
   "screen.aaigttracker.title": "All Advancements Tracker",

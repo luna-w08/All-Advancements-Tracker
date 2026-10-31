@@ -1,0 +1,10 @@
+Biome icon artwork
+
+These 16x16 icons were generated specifically for All Advancements IGT Tracker
+using OpenAI image generation and exported to a limited pixel-art palette.
+They were not downloaded from Minecraft Wiki or extracted from Minecraft.
+
+Generation prompts and the licence review are recorded in the project's
+art/biome-sprite-prompts.json and docs/biome-artwork.md files.
+
+Minecraft names and existing game content belong to their respective owners.

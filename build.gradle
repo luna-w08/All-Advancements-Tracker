@@ -46,6 +46,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+tasks.withType(Jar).configureEach {
+    from('LICENSE')
+}
+
 def java25Launcher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(25)
 }

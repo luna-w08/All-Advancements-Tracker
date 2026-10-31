@@ -14,7 +14,7 @@ import dev.milow.aaigttracker.client.model.WorldKey;
 import dev.milow.aaigttracker.client.ordering.AdvancementOrdering;
 import dev.milow.aaigttracker.client.timer.TimerReading;
 import dev.milow.aaigttracker.client.timer.TimerSource;
-import dev.milow.aaigttracker.client.visual.BiomePreviewSpec;
+import dev.milow.aaigttracker.client.visual.BiomeSpriteSpec;
 import dev.milow.aaigttracker.client.visual.CriterionIcon;
 import dev.milow.aaigttracker.client.visual.CriterionVisual;
 import dev.milow.aaigttracker.client.visual.CriterionVisualResolver;
@@ -447,10 +447,16 @@ public final class AdvancementTrackerManager {
                 continue;
             }
 
-            Identifier entityId = stringIdentifier(predicate, "type");
+            Identifier entityId = stringIdentifier(predicate, "minecraft:entity_type");
+            if (entityId == null) {
+                entityId = stringIdentifier(predicate, "type");
+            }
             boolean preferCriterionLabel = false;
             if (entityId == null) {
-                JsonObject components = childObject(predicate, "components");
+                JsonObject components = childObject(predicate, "minecraft:components");
+                if (components == null) {
+                    components = childObject(predicate, "components");
+                }
                 if (components != null) {
                     for (Map.Entry<String, JsonElement> componentEntry : components.entrySet()) {
                         int variantIndex = componentEntry.getKey().indexOf("/variant");
@@ -587,11 +593,11 @@ public final class AdvancementTrackerManager {
             return null;
         }
 
-        return this.visualForBiome(biomeId, isCaptureBiomePreviewAdvancement(advancementId));
+        return this.visualForBiome(biomeId, usesBiomeSprites(advancementId));
     }
 
     private CriterionVisual fallbackCriterionVisual(Identifier advancementId, String criterionKey) {
-        if (isCaptureBiomePreviewAdvancement(advancementId)) {
+        if (usesBiomeSprites(advancementId)) {
             CriterionVisual biomeVisual = this.visualForBiome(parseIdentifier(criterionKey), true);
             if (biomeVisual != null) {
                 return biomeVisual;
@@ -666,15 +672,15 @@ public final class AdvancementTrackerManager {
         return new CriterionVisual(label, icon, List.of(), SupplementaryIconMode.NONE);
     }
 
-    private CriterionVisual visualForBiome(Identifier biomeId, boolean usePreview) {
+    private CriterionVisual visualForBiome(Identifier biomeId, boolean useSprite) {
         if (biomeId == null) {
             return null;
         }
 
         ItemStack fallbackIcon = this.itemStackOrDefault(biomeIconId(biomeId.getPath()), Items.GRASS_BLOCK);
         CriterionIcon icon = CriterionIcon.item(fallbackIcon);
-        if (usePreview) {
-            icon = CriterionIcon.biome(fallbackIcon, new BiomePreviewSpec(biomeId, List.of()));
+        if (useSprite) {
+            icon = CriterionIcon.biome(fallbackIcon, new BiomeSpriteSpec(biomeId));
         }
 
         return new CriterionVisual(
@@ -1143,7 +1149,7 @@ public final class AdvancementTrackerManager {
         return Identifier.parse(value);
     }
 
-    private static boolean isCaptureBiomePreviewAdvancement(Identifier advancementId) {
+    private static boolean usesBiomeSprites(Identifier advancementId) {
         if (advancementId == null) {
             return false;
         }

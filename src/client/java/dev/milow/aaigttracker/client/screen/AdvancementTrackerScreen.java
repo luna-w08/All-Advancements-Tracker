@@ -32,21 +32,23 @@ import dev.milow.aaigttracker.client.ui.model.TrackerScreenModels.TabButton;
 import dev.milow.aaigttracker.client.ui.model.TrackerScreenModels.TabKind;
 import dev.milow.aaigttracker.client.ui.model.TrackerScreenModels.TileHitbox;
 import dev.milow.aaigttracker.client.ui.model.TrackerScreenModels.WaypointBoardEntry;
-import dev.milow.aaigttracker.client.visual.BiomePreviewSpec;
+import dev.milow.aaigttracker.client.visual.BiomeSpriteSpec;
 import dev.milow.aaigttracker.client.visual.CriterionIcon;
 import dev.milow.aaigttracker.client.visual.EntityPreviewSpec;
 import dev.milow.aaigttracker.client.visual.SupplementaryIconMode;
-import dev.milow.aaigttracker.client.visual.capture.IslandCapturePreviewCache;
 import dev.milow.aaigttracker.client.waypoint.WaypointService;
 import dev.milow.aaigttracker.client.waypoint.WaypointSnapshot;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -54,6 +56,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.state.EnderDragonRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.FrogRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -72,12 +75,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public final class AdvancementTrackerScreen extends Screen {
+    private static final AtomicInteger NEXT_PREVIEW_ENTITY_ID = new AtomicInteger(-1);
     private static final int OUTER_PADDING = 12;
     private static final int HEADER_Y = 12;
     private static final int BOARD_TOP = 40;
@@ -124,11 +129,7 @@ public final class AdvancementTrackerScreen extends Screen {
     private static final int PREVIEW_ITEM_BASE_SIZE = 16;
     private static final int PREVIEW_ITEM_TARGET_SIZE = 96;
     private static final int BIOME_SPRITE_SIZE = 16;
-    private static final double BIOME_PREVIEW_SCROLL_ZOOM_STEP = 0.6D;
-    private static final double BIOME_PREVIEW_DEFAULT_ZOOM = Math.max(
-            1.5D,
-            IslandCapturePreviewCache.DEFAULT_ZOOM - BIOME_PREVIEW_SCROLL_ZOOM_STEP * 2.0D
-    );
+    private static final int BIOME_SPRITE_LOADS_PER_FRAME = 2;
     private static final double MARQUEE_PIXELS_PER_MILLISECOND = 0.045D;
     private static final int MARQUEE_LOOP_GAP = 20;
     private static final int SETTINGS_BUTTON_WIDTH = 68;
@@ -149,8 +150,10 @@ public final class AdvancementTrackerScreen extends Screen {
     private static final int TEXT_COUNT = 0xFFF3DFC1;
     private static final int TEXT_BODY = 0xFFE7D8C8;
     private static final int TEXT_SUCCESS = 0xFFA5E08B;
+    private static final int TEXT_COMPLETED_TITLE = 0xFF16220E;
     private final AdvancementTrackerManager trackerManager;
-    private final IslandCapturePreviewCache biomeCapturePreviewCache = new IslandCapturePreviewCache();
+    private final Set<Identifier> drawnBiomeSprites = new HashSet<>();
+    private int biomeSpriteLoadsThisFrame;
     private final ItemProgressService itemProgressService = new ItemProgressService();
     private final WaypointService waypointService = AllAdvancementsIgtTrackerClient.getWaypointService();
 
@@ -180,13 +183,6 @@ public final class AdvancementTrackerScreen extends Screen {
     private boolean settingsMenuOpen;
     private Rect settingsButtonRect;
     private Rect settingsPanelRect;
-    private Identifier modalBiomePreviewId;
-    private double modalBiomeYaw = IslandCapturePreviewCache.DEFAULT_YAW;
-    private double modalBiomePitch = pitchForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-    private double modalBiomeZoom = BIOME_PREVIEW_DEFAULT_ZOOM;
-    private double modalBiomePanX;
-    private double modalBiomePanY = panYForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-    private boolean draggingBiomePreview;
     private Boolean debugOverlayWasVisible;
     private long nextItemScanAt;
     private final Map<EntityPreviewSpec, LivingEntity> previewEntities = new HashMap<>();
@@ -218,12 +214,12 @@ public final class AdvancementTrackerScreen extends Screen {
     public void removed() {
         this.rememberCurrentState();
         this.restoreDebugOverlay();
-        this.biomeCapturePreviewCache.close();
         super.removed();
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.biomeSpriteLoadsThisFrame = 0;
         this.refreshData();
         this.currentRenderMillis = System.currentTimeMillis();
         this.extractTransparentBackground(guiGraphics);
@@ -450,13 +446,6 @@ public final class AdvancementTrackerScreen extends Screen {
             return true;
         }
 
-        KeyMapping cycleVisibilityModeKey = AllAdvancementsIgtTrackerClient.getCycleVisibilityModeKey();
-        if (cycleVisibilityModeKey != null && cycleVisibilityModeKey.matches(event)) {
-            AllAdvancementsIgtTrackerClient.cycleCompletionVisibilityMode(this.currentWorldKey());
-            this.refreshData();
-            return true;
-        }
-
         if (key == GLFW.GLFW_KEY_F3) {
             return true;
         }
@@ -507,9 +496,6 @@ public final class AdvancementTrackerScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (this.previewOverlay != null) {
-            if (this.scrollBiomePreview(mouseX, mouseY, scrollY)) {
-                return true;
-            }
             return true;
         }
 
@@ -551,10 +537,6 @@ public final class AdvancementTrackerScreen extends Screen {
                 }
                 if (this.previewOverlay.hasMultiple() && layout.rightArrow().contains(event.x(), event.y())) {
                     this.navigatePreview(1);
-                    return true;
-                }
-                if (this.isCurrentPreviewBiome() && this.insidePreviewVisual(layout, event.x(), event.y())) {
-                    this.draggingBiomePreview = true;
                     return true;
                 }
             }
@@ -615,26 +597,6 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         return super.mouseClicked(event, doubleClick);
-    }
-
-    @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        if (this.draggingBiomePreview) {
-            this.draggingBiomePreview = false;
-            return true;
-        }
-
-        return super.mouseReleased(event);
-    }
-
-    @Override
-    public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
-        if (this.draggingBiomePreview) {
-            this.modalBiomeYaw -= deltaX * 0.006D;
-            return true;
-        }
-
-        return super.mouseDragged(event, deltaX, deltaY);
     }
 
     private void refreshData() {
@@ -1021,14 +983,16 @@ public final class AdvancementTrackerScreen extends Screen {
                 this.ellipsize(entry.title().getString(), textWidth),
                 textX,
                 textTop,
-                TEXT_PRIMARY,
+                entry instanceof AdvancementBoardEntry && entry.done() ? TEXT_COMPLETED_TITLE : TEXT_PRIMARY,
                 false
         );
 
         String subtitle = this.tileSubtitle(entry);
         if (!subtitle.isEmpty()) {
             int subtitleY = textTop + TILE_TEXT_LINE_HEIGHT + TILE_TEXT_GAP;
-            int subtitleColor = entry.done() ? TEXT_SUCCESS : TEXT_SECONDARY;
+            int subtitleColor = entry instanceof AdvancementBoardEntry && entry.done()
+                    ? TEXT_PRIMARY
+                    : entry.done() ? TEXT_SUCCESS : TEXT_SECONDARY;
             this.drawTileSubtitle(guiGraphics, entry, subtitle, hovered, textX, subtitleY, textWidth, subtitleColor);
         }
 
@@ -1099,6 +1063,11 @@ public final class AdvancementTrackerScreen extends Screen {
             return;
         }
 
+        if (snapshot.id().equals(Identifier.withDefaultNamespace("husbandry/froglights"))) {
+            this.renderFroglightRequirements(guiGraphics, snapshot, x, y, width, height, mouseX, mouseY);
+            return;
+        }
+
         RequirementMode requirementMode = this.requirementMode(snapshot);
         if (requirementMode == RequirementMode.SINGLE) {
             this.requirementScrollAdvancementId = null;
@@ -1147,6 +1116,45 @@ public final class AdvancementTrackerScreen extends Screen {
                 listHeight,
                 mouseX,
                 mouseY
+        );
+    }
+
+    private void renderFroglightRequirements(
+            GuiGraphicsExtractor guiGraphics,
+            AdvancementSnapshot snapshot,
+            int x,
+            int y,
+            int width,
+            int height,
+            int mouseX,
+            int mouseY
+    ) {
+        int headerY = y + DETAIL_INNER_PADDING;
+        guiGraphics.text(this.font, Component.translatable("screen.aaigttracker.requirements.all_of"),
+                x + DETAIL_INNER_PADDING, headerY, TEXT_COUNT, false);
+        int listY = headerY + REQUIREMENT_HEADER_HEIGHT + REQUIREMENT_HEADER_GAP;
+        // Vanilla awards one criterion for having all three lights at once. These
+        // rows explain the frog/light mapping, without inventing per-light progress.
+        List<CriterionSnapshot> frogs = List.of(
+                froglightRequirement("temperate", Items.OCHRE_FROGLIGHT),
+                froglightRequirement("warm", Items.PEARLESCENT_FROGLIGHT),
+                froglightRequirement("cold", Items.VERDANT_FROGLIGHT)
+        );
+        this.renderRequirementSections(guiGraphics, snapshot.id(), List.of(new RequirementSection(null, frogs)),
+                x + DETAIL_INNER_PADDING, listY, width - DETAIL_INNER_PADDING * 2,
+                y + height - DETAIL_INNER_PADDING - listY, mouseX, mouseY);
+    }
+
+    private static CriterionSnapshot froglightRequirement(String variant, Item froglight) {
+        return new CriterionSnapshot(
+                variant,
+                Component.translatable("screen.aaigttracker.froglight." + variant),
+                CriterionIcon.entity(froglight.getDefaultInstance(), EntityPreviewSpec.frog(Identifier.withDefaultNamespace(variant))),
+                List.of(CriterionIcon.item(froglight.getDefaultInstance())),
+                SupplementaryIconMode.STATIC_ALL,
+                false,
+                null,
+                false
         );
     }
 
@@ -1407,6 +1415,15 @@ public final class AdvancementTrackerScreen extends Screen {
             int row = index / layout.columns();
             int lineX = x + column * (layout.columnWidth() + REQUIREMENT_COLUMN_GAP);
             int lineY = contentY + row * rowStep;
+            // Scissoring only clips drawing; skip hidden rows before loading textures or building previews.
+            if (this.renderedRequirementViewport != null) {
+                if (lineY + REQUIREMENT_ENTRY_HEIGHT <= this.renderedRequirementViewport.y()) {
+                    continue;
+                }
+                if (lineY >= this.renderedRequirementViewport.y() + this.renderedRequirementViewport.height()) {
+                    break;
+                }
+            }
             CriterionSnapshot criterion = layout.section().criteria().get(index);
             boolean hovered = this.renderedRequirementViewport != null
                     && this.renderedRequirementViewport.contains(mouseX, mouseY)
@@ -1809,7 +1826,9 @@ public final class AdvancementTrackerScreen extends Screen {
         if (entry instanceof AdvancementBoardEntry advancementEntry) {
             AdvancementSnapshot snapshot = advancementEntry.snapshot();
             if (snapshot.done()) {
-                return "";
+                return snapshot.hasKnownCompletionTime()
+                        ? Component.translatable("screen.aaigttracker.completion.time", formatMillis(snapshot.completionTimeMillis())).getString()
+                        : Component.translatable("screen.aaigttracker.completion.time_unknown").getString();
             }
 
             return this.singleLineText(snapshot.description().getString());
@@ -1911,13 +1930,11 @@ public final class AdvancementTrackerScreen extends Screen {
             return;
         }
 
-        if (icon.isBiomePreview()) {
-            if (this.renderBiomeSprite(guiGraphics, icon.biomePreviewSpec(), x, y, slotWidth, slotHeight)) {
+        if (icon.isBiomeSprite()) {
+            if (this.renderBiomeSprite(guiGraphics, icon.biomeSpriteSpec(), x, y, slotWidth, slotHeight)) {
                 return;
             }
-            if (this.renderBiomePreview(guiGraphics, icon.biomePreviewSpec(), x, y, slotWidth, slotHeight, false)) {
-                return;
-            }
+            // Keep biome icons static; use the fallback item while the sprite loads or is missing.
         }
 
         if (icon.isEntityPreview()) {
@@ -1951,7 +1968,7 @@ public final class AdvancementTrackerScreen extends Screen {
     }
 
     private int primaryIconSlotWidth(CriterionIcon icon) {
-        if (icon != null && icon.isBiomePreview()) {
+        if (icon != null && icon.isBiomeSprite()) {
             return REQUIREMENT_BIOME_SLOT_WIDTH;
         }
         if (icon == null || !icon.isEntityPreview()) {
@@ -1983,8 +2000,6 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         this.previewOverlay = new PreviewOverlay(previewableCriteria, selectedIndex);
-        this.resetBiomePreviewView();
-        this.syncPreviewVideoCache();
         return true;
     }
 
@@ -1993,11 +2008,14 @@ public final class AdvancementTrackerScreen extends Screen {
             return false;
         }
 
+        if (criterion.icon().isBiomeSprite()) {
+            return false;
+        }
+
         Component subtitle = this.previewSubtitle(criterion);
         boolean entityPreview = criterion.icon().isEntityPreview();
-        boolean biomePreview = criterion.icon().isBiomePreview();
         boolean itemPreview = criterion.icon().isItem() && subtitle != null;
-        return entityPreview || biomePreview || itemPreview;
+        return entityPreview || itemPreview;
     }
 
     private Component previewSubtitle(CriterionSnapshot criterion) {
@@ -2061,19 +2079,6 @@ public final class AdvancementTrackerScreen extends Screen {
             LivingEntity entity = this.previewEntity(icon.entityPreviewSpec());
             if (entity != null) {
                 this.renderEntityPortrait(guiGraphics, entity, layout.visualX(), layout.visualY(), layout.visualWidth(), layout.visualHeight(), true);
-            }
-        } else if (icon.isBiomePreview()) {
-            boolean rendered = this.renderBiomePreview(
-                    guiGraphics,
-                    icon.biomePreviewSpec(),
-                    layout.visualX(),
-                    layout.visualY(),
-                    layout.visualWidth(),
-                    layout.visualHeight(),
-                    true
-            );
-            if (!rendered && icon.isItem()) {
-                this.renderLargeItemPreview(guiGraphics, icon, layout);
             }
         } else if (icon.isItem()) {
             this.renderLargeItemPreview(guiGraphics, icon, layout);
@@ -2151,8 +2156,6 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         this.previewOverlay = this.previewOverlay.navigate(direction);
-        this.resetBiomePreviewView();
-        this.syncPreviewVideoCache();
     }
 
     private void closePreviewOverlay() {
@@ -2161,46 +2164,6 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         this.previewOverlay = null;
-        this.resetBiomePreviewView();
-        this.biomeCapturePreviewCache.releaseModalTextures();
-    }
-
-    private void syncPreviewVideoCache() {
-        if (this.previewOverlay == null || this.previewOverlay.criteria().isEmpty()) {
-            this.biomeCapturePreviewCache.releaseModalTextures();
-            return;
-        }
-
-        List<BiomePreviewSpec> retainedSpecs = new ArrayList<>(3);
-        this.addBiomePreviewSpec(retainedSpecs, this.previewOverlay.selectedIndex());
-        if (this.previewOverlay.hasMultiple()) {
-            this.addBiomePreviewSpec(retainedSpecs, Math.floorMod(this.previewOverlay.selectedIndex() - 1, this.previewOverlay.criteria().size()));
-            this.addBiomePreviewSpec(retainedSpecs, Math.floorMod(this.previewOverlay.selectedIndex() + 1, this.previewOverlay.criteria().size()));
-        }
-        this.biomeCapturePreviewCache.retainModalPreviews(retainedSpecs);
-    }
-
-    private void addBiomePreviewSpec(List<BiomePreviewSpec> specs, int index) {
-        if (this.previewOverlay == null || specs == null || this.previewOverlay.criteria().isEmpty()) {
-            return;
-        }
-
-        CriterionSnapshot criterion = this.previewOverlay.criteria().get(index);
-        if (criterion == null || criterion.icon() == null || !criterion.icon().isBiomePreview()) {
-            return;
-        }
-
-        BiomePreviewSpec spec = criterion.icon().biomePreviewSpec();
-        if (spec == null || spec.biomeId() == null) {
-            return;
-        }
-
-        for (BiomePreviewSpec existing : specs) {
-            if (existing != null && spec.biomeId().equals(existing.biomeId())) {
-                return;
-            }
-        }
-        specs.add(spec);
     }
 
     private void renderRequirementScrollbar(
@@ -2395,146 +2358,9 @@ public final class AdvancementTrackerScreen extends Screen {
         pose.popMatrix();
     }
 
-    private boolean scrollBiomePreview(double mouseX, double mouseY, double scrollY) {
-        if (!this.isCurrentPreviewBiome()) {
-            return false;
-        }
-
-        PreviewLayout layout = this.previewLayout();
-        if (layout == null || !this.insidePreviewVisual(layout, mouseX, mouseY)) {
-            return false;
-        }
-
-        this.ensureBiomePreviewView(this.currentPreviewIcon().biomePreviewSpec());
-        this.modalBiomeZoom = Mth.clamp(
-                this.modalBiomeZoom + scrollY * BIOME_PREVIEW_SCROLL_ZOOM_STEP,
-                1.5D,
-                IslandCapturePreviewCache.MAX_ZOOM
-        );
-        this.modalBiomePitch = pitchForBiomeZoom(this.modalBiomeZoom);
-        this.modalBiomePanY = panYForBiomeZoom(this.modalBiomeZoom);
-        return true;
-    }
-
-    private boolean isCurrentPreviewBiome() {
-        CriterionIcon icon = this.currentPreviewIcon();
-        return icon != null && icon.isBiomePreview();
-    }
-
-    private CriterionIcon currentPreviewIcon() {
-        if (this.previewOverlay == null || this.previewOverlay.current() == null) {
-            return null;
-        }
-
-        return this.previewOverlay.current().icon();
-    }
-
-    private boolean insidePreviewVisual(PreviewLayout layout, double mouseX, double mouseY) {
-        return mouseX >= layout.visualX()
-                && mouseX < layout.visualX() + layout.visualWidth()
-                && mouseY >= layout.visualY()
-                && mouseY < layout.visualY() + layout.visualHeight();
-    }
-
-    private BiomePreviewView biomePreviewView(BiomePreviewSpec previewSpec, boolean modal) {
-        if (!modal) {
-            return new BiomePreviewView(
-                    IslandCapturePreviewCache.DEFAULT_YAW,
-                    IslandCapturePreviewCache.DEFAULT_PITCH,
-                    BIOME_PREVIEW_DEFAULT_ZOOM,
-                    0.0D,
-                    0.0D
-            );
-        }
-
-        this.ensureBiomePreviewView(previewSpec);
-        if (!this.draggingBiomePreview) {
-            this.modalBiomeYaw += 0.0028D;
-        }
-        return new BiomePreviewView(
-                this.modalBiomeYaw,
-                this.modalBiomePitch,
-                this.modalBiomeZoom,
-                this.modalBiomePanX,
-                this.modalBiomePanY
-        );
-    }
-
-    private void ensureBiomePreviewView(BiomePreviewSpec previewSpec) {
-        Identifier biomeId = previewSpec == null ? null : previewSpec.biomeId();
-        if (Objects.equals(this.modalBiomePreviewId, biomeId)) {
-            return;
-        }
-
-        this.modalBiomePreviewId = biomeId;
-        this.modalBiomeYaw = IslandCapturePreviewCache.DEFAULT_YAW;
-        this.modalBiomePitch = pitchForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-        this.modalBiomeZoom = BIOME_PREVIEW_DEFAULT_ZOOM;
-        this.modalBiomePanX = 0.0D;
-        this.modalBiomePanY = panYForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-        this.draggingBiomePreview = false;
-    }
-
-    private void resetBiomePreviewView() {
-        this.modalBiomePreviewId = null;
-        this.modalBiomeYaw = IslandCapturePreviewCache.DEFAULT_YAW;
-        this.modalBiomePitch = pitchForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-        this.modalBiomeZoom = BIOME_PREVIEW_DEFAULT_ZOOM;
-        this.modalBiomePanX = 0.0D;
-        this.modalBiomePanY = panYForBiomeZoom(BIOME_PREVIEW_DEFAULT_ZOOM);
-        this.draggingBiomePreview = false;
-    }
-
-    private static double pitchForBiomeZoom(double zoom) {
-        double progress = Mth.clamp(
-                (zoom - IslandCapturePreviewCache.DEFAULT_ZOOM)
-                        / (IslandCapturePreviewCache.MAX_ZOOM - IslandCapturePreviewCache.DEFAULT_ZOOM),
-                0.0D,
-                1.0D
-        );
-        return IslandCapturePreviewCache.DEFAULT_PITCH * (1.0D - progress);
-    }
-
-    private static double panYForBiomeZoom(double zoom) {
-        return Math.max(0.0D, zoom - IslandCapturePreviewCache.DEFAULT_ZOOM) * 14.0D;
-    }
-
-    private boolean renderBiomePreview(
-            GuiGraphicsExtractor guiGraphics,
-            BiomePreviewSpec previewSpec,
-            int x,
-            int y,
-            int width,
-            int height,
-            boolean modal
-    ) {
-        if (previewSpec == null || previewSpec.isEmpty()) {
-            return false;
-        }
-
-        BiomePreviewView view = this.biomePreviewView(previewSpec, modal);
-        guiGraphics.enableScissor(x, y, x + width, y + height);
-        boolean rendered = this.biomeCapturePreviewCache.render(
-                guiGraphics,
-                previewSpec,
-                x,
-                y,
-                width,
-                height,
-                modal,
-                view.yaw(),
-                view.pitch(),
-                view.zoom(),
-                view.panX(),
-                view.panY()
-        );
-        guiGraphics.disableScissor();
-        return rendered;
-    }
-
     private boolean renderBiomeSprite(
             GuiGraphicsExtractor guiGraphics,
-            BiomePreviewSpec previewSpec,
+            BiomeSpriteSpec previewSpec,
             int x,
             int y,
             int slotWidth,
@@ -2545,9 +2371,19 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         Identifier spriteId = biomeSpriteId(previewSpec.biomeId());
+        boolean firstDraw = !this.drawnBiomeSprites.contains(spriteId);
+        // First use decodes and uploads a texture. Spread that work over frames when opening a biome list.
+        if (firstDraw && this.biomeSpriteLoadsThisFrame >= BIOME_SPRITE_LOADS_PER_FRAME) {
+            return false;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft == null || minecraft.getResourceManager() == null || minecraft.getResourceManager().getResource(spriteId).isEmpty()) {
             return false;
+        }
+
+        if (firstDraw) {
+            this.biomeSpriteLoadsThisFrame++;
+            this.drawnBiomeSprites.add(spriteId);
         }
 
         int spriteSize = Math.max(1, Math.min(BIOME_SPRITE_SIZE, Math.min(slotWidth, slotHeight)));
@@ -2575,9 +2411,6 @@ public final class AdvancementTrackerScreen extends Screen {
         return Identifier.fromNamespaceAndPath("aaigttracker", "biome_sprites/" + fileName);
     }
 
-    private record BiomePreviewView(double yaw, double pitch, double zoom, double panX, double panY) {
-    }
-
     private void renderEntityPortrait(
             GuiGraphicsExtractor guiGraphics,
             LivingEntity entity,
@@ -2589,14 +2422,15 @@ public final class AdvancementTrackerScreen extends Screen {
     ) {
         float yaw = rotating
                 ? (this.currentRenderMillis % PREVIEW_ROTATION_PERIOD_MILLIS) * 360.0F / PREVIEW_ROTATION_PERIOD_MILLIS
-                : 0.0F;
-        float ageInTicks = rotating ? (this.currentRenderMillis % 120_000L) / 50.0F : 0.0F;
+                : 35.0F;
+        boolean animated = rotating || entity.getType() == EntityTypes.FROG;
+        float ageInTicks = animated ? (this.currentRenderMillis % 120_000L) / 50.0F : 0.0F;
         entity.setPos(0, 0, 0);
         entity.tickCount = (int) ageInTicks;
         this.stabilizePreviewEntity(entity);
         this.applyPreviewRotation(entity);
 
-        EntityRenderState renderState = this.extractPreviewRenderState(entity, yaw, ageInTicks, rotating);
+        EntityRenderState renderState = this.extractPreviewRenderState(entity, yaw, ageInTicks, animated);
         if (renderState == null) {
             return;
         }
@@ -2692,6 +2526,15 @@ public final class AdvancementTrackerScreen extends Screen {
             dragonState.partialTicks = animated ? 1.0F : 0.0F;
         }
 
+        if (renderState instanceof FrogRenderState frogState && animated) {
+            int cycleStart = (int) (ageInTicks / 60.0F) * 60;
+            if (ageInTicks - cycleStart < 20.0F) {
+                frogState.jumpAnimationState.start(cycleStart);
+            } else if (ageInTicks - cycleStart < 40.0F) {
+                frogState.croakAnimationState.start(cycleStart + 20);
+            }
+        }
+
         renderState.boundingBoxWidth = Math.max(0.1F, renderState.boundingBoxWidth);
         renderState.boundingBoxHeight = Math.max(0.1F, renderState.boundingBoxHeight);
         return renderState;
@@ -2766,6 +2609,8 @@ public final class AdvancementTrackerScreen extends Screen {
             return null;
         }
 
+        // GUI entities never join the world, so 26.2 does not assign their IDs automatically.
+        livingEntity.setId(NEXT_PREVIEW_ENTITY_ID.getAndDecrement());
         this.applyPreviewVariant(livingEntity, previewSpec);
         this.stabilizePreviewEntity(livingEntity);
         livingEntity.setYRot(0.0F);
