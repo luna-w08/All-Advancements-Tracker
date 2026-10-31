@@ -11,20 +11,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LightmapRenderStateExtractor.class)
-public abstract class LightmapFullbrightMixin {
+public abstract class LightmapSettingsMixin {
     @Shadow
     private boolean needsUpdate;
 
     @Unique
-    private boolean aaigttracker$fullbrightWasEnabled;
+    private int aaigttracker$lastSettingsRevision = -1;
 
     @Inject(method = "extract", at = @At("HEAD"))
-    private void aaigttracker$refreshLightingOnToggle(LightmapRenderState state, float partialTick, CallbackInfo callbackInfo) {
-        boolean enabled = AllAdvancementsIgtTrackerClient.isFullbrightEnabled();
-        if (enabled != this.aaigttracker$fullbrightWasEnabled) {
-            // Re-extract vanilla values on either transition, including while paused.
+    private void aaigttracker$refreshLightingOnSettingsChange(LightmapRenderState state, float partialTick, CallbackInfo callbackInfo) {
+        int revision = AllAdvancementsIgtTrackerClient.getVisualSettingsRevision();
+        if (revision != this.aaigttracker$lastSettingsRevision) {
+            // Refresh all lighting settings immediately, including toggles made while paused.
             this.needsUpdate = true;
-            this.aaigttracker$fullbrightWasEnabled = enabled;
+            this.aaigttracker$lastSettingsRevision = revision;
         }
     }
 

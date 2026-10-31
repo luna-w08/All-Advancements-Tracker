@@ -27,9 +27,10 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
     private static final Map<WorldKey, TrackerUiState> trackerUiStates = new HashMap<>();
     private static final WaypointService waypointService = new WaypointService();
     private static MenuBackgroundColor menuBackgroundColor = MenuBackgroundColor.CLASSIC;
-    private static boolean noFogEnabled;
-    private static boolean noDarknessEnabled;
-    private static boolean fullbrightEnabled;
+    private static volatile boolean noFogEnabled;
+    private static volatile boolean noDarknessEnabled;
+    private static volatile boolean fullbrightEnabled;
+    private static volatile int visualSettingsRevision;
     private static UUID observedPlayerId;
     private static boolean deathWaypointRecorded;
 
@@ -109,6 +110,7 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static void toggleNoFog() {
         noFogEnabled = !noFogEnabled;
+        visualSettingsRevision++;
     }
 
     public static boolean isNoDarknessEnabled() {
@@ -117,6 +119,7 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static void toggleNoDarkness() {
         noDarknessEnabled = !noDarknessEnabled;
+        visualSettingsRevision++;
     }
 
     public static boolean isFullbrightEnabled() {
@@ -125,6 +128,11 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static void toggleFullbright() {
         fullbrightEnabled = !fullbrightEnabled;
+        visualSettingsRevision++;
+    }
+
+    public static int getVisualSettingsRevision() {
+        return visualSettingsRevision;
     }
 
     public static KeyMapping getOpenTrackerKey() {

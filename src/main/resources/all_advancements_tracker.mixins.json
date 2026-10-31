@@ -9,7 +9,7 @@
     "ClientAdvancementsAccessor",
     "FogRendererMixin",
     "LivingEntityDarknessMixin",
-    "LightmapFullbrightMixin",
+    "LightmapSettingsMixin",
     "PauseScreenMixin"
   ],
   "injectors": {
