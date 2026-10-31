@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public final class AllAdvancementsIgtTrackerClient implements ClientModInitializer {
     private static AdvancementTrackerManager trackerManager;
@@ -40,8 +39,8 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
         openTrackerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.aaigttracker.open_screen",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_RSHIFT,
                 trackerCategory
         ));
 

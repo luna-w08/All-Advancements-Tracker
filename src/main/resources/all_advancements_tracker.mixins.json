@@ -6,7 +6,6 @@
   "mixins": [
   ],
   "client": [
-    "ClientAdvancementsAccessor",
     "PauseScreenMixin"
   ],
   "injectors": {

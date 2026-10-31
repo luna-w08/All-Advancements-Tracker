@@ -125,7 +125,7 @@ final class ItemScanner {
 
         BundleContents bundleContents = stack.get(DataComponents.BUNDLE_CONTENTS);
         if (bundleContents != null) {
-            bundleContents.itemCopyStream().forEach(item -> this.scanItemStack(item, scanResult, depth + 1));
+            bundleContents.itemCopies().forEach(item -> this.scanItemStack(item, scanResult, depth + 1));
         }
 
         ItemContainerContents containerContents = stack.get(DataComponents.CONTAINER);

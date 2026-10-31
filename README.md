@@ -12,3 +12,6 @@ Licence: All rights reserved; see [LICENSE](LICENSE). Redistribution, including 
 Filter and background settings take effect during the current run. No restart or world reload is required.
 
 Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+
+
+Minecraft 26.3 port (mod version 1.3.0): requires Fabric Loader 0.19.5 or newer and Fabric API for 26.3. Includes the Dappled Forest sprite and updated 26.3 advancement/input APIs. Build with Java 25.
