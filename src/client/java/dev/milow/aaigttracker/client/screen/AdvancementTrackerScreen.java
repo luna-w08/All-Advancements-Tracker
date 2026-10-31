@@ -1,5 +1,7 @@
 package dev.milow.aaigttracker.client.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
+
 import dev.milow.aaigttracker.client.app.AllAdvancementsIgtTrackerClient;
 import dev.milow.aaigttracker.client.data.ItemCompletionGateData;
 import dev.milow.aaigttracker.client.data.TrackerDataRepository;
@@ -79,7 +81,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 public final class AdvancementTrackerScreen extends Screen {
     private static final AtomicInteger NEXT_PREVIEW_ENTITY_ID = new AtomicInteger(-1);
@@ -408,15 +409,15 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         if (this.previewOverlay != null) {
-            if (key == GLFW.GLFW_KEY_ESCAPE) {
+            if (key == InputConstants.KEY_ESCAPE) {
                 this.closePreviewOverlay();
                 return true;
             }
-            if (key == GLFW.GLFW_KEY_LEFT) {
+            if (key == InputConstants.KEY_LEFT) {
                 this.navigatePreview(-1);
                 return true;
             }
-            if (key == GLFW.GLFW_KEY_RIGHT) {
+            if (key == InputConstants.KEY_RIGHT) {
                 this.navigatePreview(1);
                 return true;
             }
@@ -424,15 +425,15 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         if (this.waypointInputOverlay != null) {
-            if (key == GLFW.GLFW_KEY_ESCAPE) {
+            if (key == InputConstants.KEY_ESCAPE) {
                 this.waypointInputOverlay = null;
                 return true;
             }
-            if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
+            if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
                 this.commitWaypointInput();
                 return true;
             }
-            if (key == GLFW.GLFW_KEY_BACKSPACE) {
+            if (key == InputConstants.KEY_BACKSPACE) {
                 this.backspaceWaypointInput();
                 return true;
             }
@@ -440,28 +441,28 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         if (this.settingsMenuOpen) {
-            if (key == GLFW.GLFW_KEY_ESCAPE) {
+            if (key == InputConstants.KEY_ESCAPE) {
                 this.settingsMenuOpen = false;
             }
             return true;
         }
 
-        if (key == GLFW.GLFW_KEY_F3) {
+        if (key == InputConstants.KEY_F3) {
             return true;
         }
 
-        if (key == GLFW.GLFW_KEY_LEFT) {
+        if (key == InputConstants.KEY_LEFT) {
             this.cycleTab(-1);
             return true;
         }
 
-        if (key == GLFW.GLFW_KEY_RIGHT) {
+        if (key == InputConstants.KEY_RIGHT) {
             this.cycleTab(1);
             return true;
         }
 
-        if (key >= GLFW.GLFW_KEY_1 && key <= GLFW.GLFW_KEY_9) {
-            int tabIndex = key - GLFW.GLFW_KEY_1;
+        if (key >= InputConstants.KEY_1 && key <= InputConstants.KEY_9) {
+            int tabIndex = key - InputConstants.KEY_1;
             if (tabIndex < this.cachedTabs.size()) {
                 this.selectTab(tabIndex);
                 return true;

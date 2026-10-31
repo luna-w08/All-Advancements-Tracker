@@ -20,7 +20,6 @@ import dev.milow.aaigttracker.client.visual.CriterionVisual;
 import dev.milow.aaigttracker.client.visual.CriterionVisualResolver;
 import dev.milow.aaigttracker.client.visual.EntityPreviewSpec;
 import dev.milow.aaigttracker.client.visual.SupplementaryIconMode;
-import dev.milow.aaigttracker.mixin.ClientAdvancementsAccessor;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Method;
@@ -203,7 +202,7 @@ public final class AdvancementTrackerManager {
         }
 
         ClientAdvancements clientAdvancements = connection.getAdvancements();
-        AdvancementTree tree = clientAdvancements.getTree();
+        AdvancementTree tree = clientAdvancements.tree();
         ResourceManager resourceManager = minecraft.getResourceManager();
         Map<AdvancementHolder, AdvancementProgress> progressByHolder = this.clientProgress(clientAdvancements);
         Map<Identifier, AdvancementSnapshot> rebuiltSnapshots = new HashMap<>();
@@ -333,10 +332,10 @@ public final class AdvancementTrackerManager {
         AdvancementNode rootNode = resolvedAdvancement.node().root();
         Identifier rootId = rootNode.holder().id();
         Component rootTitle = rootNode.holder().value().display()
-                .map(DisplayInfo::getTitle)
+                .map(DisplayInfo::title)
                 .orElse(Component.literal(humanizeRoot(rootId)));
         ItemStack rootIcon = rootNode.holder().value().display()
-                .map(info -> info.getIcon().create())
+                .map(info -> info.icon().create())
                 .orElse(ItemStack.EMPTY);
         boolean done = progress.isDone();
         Long completionTime = done ? latestKnownCompletionTime(criteriaByKey.values()) : null;
@@ -346,13 +345,13 @@ public final class AdvancementTrackerManager {
                 rootId,
                 rootTitle,
                 rootIcon,
-                displayInfo.getTitle(),
-                displayInfo.getDescription(),
-                displayInfo.getIcon().create(),
+                displayInfo.title(),
+                displayInfo.description(),
+                displayInfo.icon().create(),
                 done,
                 progress.getPercent(),
-                displayInfo.getX(),
-                displayInfo.getY(),
+                resolvedAdvancement.node().x(),
+                resolvedAdvancement.node().y(),
                 orderedCriteria.size(),
                 completedCriteria.size(),
                 List.copyOf(criteriaByKey.values()),
@@ -436,13 +435,7 @@ public final class AdvancementTrackerManager {
 
     private CriterionVisual parseEntityVisual(Identifier advancementId, String criterionKey, JsonObject conditions) {
         for (String fieldName : List.of("entity", "child", "parent", "partner")) {
-            JsonArray targets = childArray(conditions, fieldName);
-            if (targets == null || targets.isEmpty() || !targets.get(0).isJsonObject()) {
-                continue;
-            }
-
-            JsonObject targetObject = targets.get(0).getAsJsonObject();
-            JsonObject predicate = childObject(targetObject, "predicate");
+            JsonObject predicate = findEntityPredicate(conditions.get(fieldName));
             if (predicate == null) {
                 continue;
             }
@@ -521,7 +514,10 @@ public final class AdvancementTrackerManager {
 
         JsonObject locationObject = childObject(conditions, "location");
         if (locationObject != null) {
-            blockId = stringIdentifier(locationObject, "block");
+            blockId = stringIdentifier(locationObject, "blocks");
+            if (blockId == null) {
+                blockId = stringIdentifier(locationObject, "block");
+            }
         }
 
         JsonArray locationArray = childArray(conditions, "location");
@@ -550,7 +546,10 @@ public final class AdvancementTrackerManager {
     }
 
     private CriterionVisual parseRecipeVisual(String criterionKey, JsonObject conditions) {
-        Identifier recipeId = stringIdentifier(conditions, "recipe_id");
+        Identifier recipeId = stringIdentifier(conditions, "recipes");
+        if (recipeId == null) {
+            recipeId = stringIdentifier(conditions, "recipe_id");
+        }
         if (recipeId == null) {
             return null;
         }
@@ -576,14 +575,11 @@ public final class AdvancementTrackerManager {
     }
 
     private CriterionVisual parseBiomeVisual(Identifier advancementId, String criterionKey, JsonObject conditions) {
-        JsonArray players = childArray(conditions, "player");
-        if (players == null || players.isEmpty() || !players.get(0).isJsonObject()) {
-            return null;
+        JsonObject predicate = findEntityPredicate(conditions.get("player"));
+        JsonObject location = childObject(predicate, "minecraft:location");
+        if (location == null) {
+            location = childObject(predicate, "location");
         }
-
-        JsonObject playerObject = players.get(0).getAsJsonObject();
-        JsonObject predicate = childObject(playerObject, "predicate");
-        JsonObject location = predicate != null ? childObject(predicate, "location") : null;
         if (location == null) {
             return null;
         }
@@ -597,6 +593,22 @@ public final class AdvancementTrackerManager {
     }
 
     private CriterionVisual fallbackCriterionVisual(Identifier advancementId, String criterionKey) {
+        // Multiplayer clients do not always have the server's advancement JSON.
+        // Known variant collections still identify their mob independently of it.
+        Identifier variantEntity = switch (advancementId.toString()) {
+            case "minecraft:husbandry/complete_catalogue" -> id("minecraft:cat");
+            case "minecraft:husbandry/whole_pack" -> id("minecraft:wolf");
+            case "minecraft:husbandry/leash_all_frog_variants" -> id("minecraft:frog");
+            default -> null;
+        };
+        if (variantEntity != null) {
+            CriterionVisual variantVisual = this.visualForEntity(advancementId, variantEntity, criterionKey,
+                    Component.literal(humanizeCriterion(criterionKey)));
+            if (variantVisual != null) {
+                return variantVisual;
+            }
+        }
+
         if (usesBiomeSprites(advancementId)) {
             CriterionVisual biomeVisual = this.visualForBiome(parseIdentifier(criterionKey), true);
             if (biomeVisual != null) {
@@ -843,6 +855,30 @@ public final class AdvancementTrackerManager {
         return null;
     }
 
+    private static JsonObject findEntityPredicate(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+        if (element.isJsonArray()) {
+            for (JsonElement child : element.getAsJsonArray()) {
+                JsonObject predicate = findEntityPredicate(child);
+                if (predicate != null) {
+                    return predicate;
+                }
+            }
+        } else if (element.isJsonObject()) {
+            JsonObject object = element.getAsJsonObject();
+            JsonObject predicate = childObject(object, "predicate");
+            if (predicate != null) {
+                return predicate;
+            }
+            // 26.3 uses individual loot conditions (or explicit all_of terms)
+            // instead of the implicit arrays used by earlier advancements.
+            return findEntityPredicate(object.get("terms"));
+        }
+        return null;
+    }
+
     private static JsonObject childObject(JsonObject object, String memberName) {
         if (object == null || !object.has(memberName) || !object.get(memberName).isJsonObject()) {
             return null;
@@ -970,7 +1006,7 @@ public final class AdvancementTrackerManager {
     private Map<AdvancementHolder, AdvancementProgress> clientProgress(ClientAdvancements clientAdvancements) {
         try {
             Map<AdvancementHolder, AdvancementProgress> progress =
-                    ((ClientAdvancementsAccessor) clientAdvancements).aaigttracker$progress();
+                    clientAdvancements.progress();
             return progress == null ? Map.of() : progress;
         } catch (RuntimeException exception) {
             AllAdvancementsIgtTracker.LOGGER.debug("Failed to read synced client advancement progress", exception);
@@ -1021,15 +1057,11 @@ public final class AdvancementTrackerManager {
     }
 
     private static double displayX(AdvancementNode node) {
-        return node.holder().value().display()
-                .map(DisplayInfo::getX)
-                .orElse(Float.MAX_VALUE);
+        return node.x();
     }
 
     private static double displayY(AdvancementNode node) {
-        return node.holder().value().display()
-                .map(DisplayInfo::getY)
-                .orElse(Float.MAX_VALUE);
+        return node.y();
     }
 
     private EntityPreviewSpec entityPreviewSpec(Identifier advancementId, Identifier entityId, String criterionKey) {
@@ -1132,6 +1164,7 @@ public final class AdvancementTrackerManager {
             case "birch_forest", "old_growth_birch_forest" -> id("minecraft:birch_sapling");
             case "dark_forest" -> id("minecraft:dark_oak_sapling");
             case "pale_garden" -> id("minecraft:pale_oak_sapling");
+            case "dappled_forest" -> id("minecraft:poplar_sapling");
             case "savanna", "savanna_plateau", "windswept_savanna" -> id("minecraft:acacia_sapling");
             case "jungle", "sparse_jungle" -> id("minecraft:jungle_sapling");
             case "bamboo_jungle" -> id("minecraft:bamboo");
