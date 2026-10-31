@@ -135,7 +135,7 @@ public final class AdvancementTrackerScreen extends Screen {
     private static final int SETTINGS_BUTTON_WIDTH = 68;
     private static final int SETTINGS_BUTTON_HEIGHT = 18;
     private static final int SETTINGS_PANEL_WIDTH = 292;
-    private static final int SETTINGS_PANEL_HEIGHT = 126;
+    private static final int SETTINGS_PANEL_HEIGHT = 84;
     private static final int SETTINGS_PANEL_PADDING = 10;
     private static final int SETTINGS_SEGMENT_HEIGHT = 18;
     private static final int SETTINGS_SWATCH_SIZE = 16;
@@ -801,7 +801,6 @@ public final class AdvancementTrackerScreen extends Screen {
         );
 
         int contentX = panelX + SETTINGS_PANEL_PADDING;
-        int contentWidth = SETTINGS_PANEL_WIDTH - SETTINGS_PANEL_PADDING * 2;
         int rowY = panelY + 24;
         guiGraphics.text(
                 this.font,
@@ -861,46 +860,6 @@ public final class AdvancementTrackerScreen extends Screen {
             swatchX += SETTINGS_SWATCH_SIZE + SETTINGS_SWATCH_GAP;
         }
 
-        rowY += 25;
-        Rect noFogRect = new Rect(contentX, rowY, contentWidth, SETTINGS_TOGGLE_HEIGHT);
-        this.renderSettingsToggle(
-                guiGraphics,
-                noFogRect,
-                Component.translatable("screen.aaigttracker.settings.no_fog"),
-                AllAdvancementsIgtTrackerClient.isNoFogEnabled(),
-                noFogRect.contains(mouseX, mouseY)
-        );
-        this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(noFogRect, SettingsAction.TOGGLE_NO_FOG));
-
-        rowY += 20;
-        Rect noDarknessRect = new Rect(contentX, rowY, contentWidth, SETTINGS_TOGGLE_HEIGHT);
-        this.renderSettingsToggle(
-                guiGraphics,
-                noDarknessRect,
-                Component.translatable("screen.aaigttracker.settings.no_darkness"),
-                AllAdvancementsIgtTrackerClient.isNoDarknessEnabled(),
-                noDarknessRect.contains(mouseX, mouseY)
-        );
-        this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(noDarknessRect, SettingsAction.TOGGLE_NO_DARKNESS));
-    }
-
-    private void renderSettingsToggle(
-            GuiGraphicsExtractor guiGraphics,
-            Rect rect,
-            Component label,
-            boolean enabled,
-            boolean hovered
-    ) {
-        guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.bottom(), hovered ? 0x526A4545 : 0x33351E1E);
-        int boxSize = 12;
-        int boxX = rect.x() + 1;
-        int boxY = rect.y() + 2;
-        guiGraphics.fill(boxX, boxY, boxX + boxSize, boxY + boxSize, enabled ? this.menuBackgroundColor().activeColor() : 0x8C2A1717);
-        guiGraphics.outline(boxX, boxY, boxSize, boxSize, enabled || hovered ? 0xFFF0D3A3 : 0xB1855C5C);
-        if (enabled) {
-            guiGraphics.centeredText(this.font, Component.literal("X"), boxX + boxSize / 2, boxY + 2, TEXT_HEADER);
-        }
-        guiGraphics.text(this.font, label, boxX + boxSize + 7, rect.y() + 4, enabled ? TEXT_PRIMARY : TEXT_MUTED, false);
     }
 
     private void activateSettingsAction(SettingsActionHitbox hitbox) {
@@ -910,8 +869,6 @@ public final class AdvancementTrackerScreen extends Screen {
                 this.refreshData();
             }
             case SET_BACKGROUND -> AllAdvancementsIgtTrackerClient.setMenuBackgroundColor(hitbox.backgroundColor());
-            case TOGGLE_NO_FOG -> AllAdvancementsIgtTrackerClient.toggleNoFog();
-            case TOGGLE_NO_DARKNESS -> AllAdvancementsIgtTrackerClient.toggleNoDarkness();
         }
     }
 
@@ -2725,9 +2682,7 @@ public final class AdvancementTrackerScreen extends Screen {
 
     private enum SettingsAction {
         SET_VISIBILITY,
-        SET_BACKGROUND,
-        TOGGLE_NO_FOG,
-        TOGGLE_NO_DARKNESS
+        SET_BACKGROUND
     }
 
     private record SettingsActionHitbox(
@@ -2744,9 +2699,6 @@ public final class AdvancementTrackerScreen extends Screen {
             return new SettingsActionHitbox(SettingsAction.SET_BACKGROUND, rect, null, backgroundColor);
         }
 
-        private static SettingsActionHitbox simple(Rect rect, SettingsAction action) {
-            return new SettingsActionHitbox(action, rect, null, null);
-        }
     }
 
     private enum WaypointInputMode {
