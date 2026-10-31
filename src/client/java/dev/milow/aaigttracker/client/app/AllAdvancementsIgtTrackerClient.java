@@ -29,6 +29,7 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
     private static MenuBackgroundColor menuBackgroundColor = MenuBackgroundColor.CLASSIC;
     private static boolean noFogEnabled;
     private static boolean noDarknessEnabled;
+    private static boolean fullbrightEnabled;
     private static UUID observedPlayerId;
     private static boolean deathWaypointRecorded;
 
@@ -116,6 +117,14 @@ public final class AllAdvancementsIgtTrackerClient implements ClientModInitializ
 
     public static void toggleNoDarkness() {
         noDarknessEnabled = !noDarknessEnabled;
+    }
+
+    public static boolean isFullbrightEnabled() {
+        return fullbrightEnabled;
+    }
+
+    public static void toggleFullbright() {
+        fullbrightEnabled = !fullbrightEnabled;
     }
 
     public static KeyMapping getOpenTrackerKey() {

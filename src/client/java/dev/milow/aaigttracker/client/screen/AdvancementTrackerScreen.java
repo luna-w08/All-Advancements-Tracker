@@ -135,7 +135,7 @@ public final class AdvancementTrackerScreen extends Screen {
     private static final int SETTINGS_BUTTON_WIDTH = 68;
     private static final int SETTINGS_BUTTON_HEIGHT = 18;
     private static final int SETTINGS_PANEL_WIDTH = 292;
-    private static final int SETTINGS_PANEL_HEIGHT = 126;
+    private static final int SETTINGS_PANEL_HEIGHT = 146;
     private static final int SETTINGS_PANEL_PADDING = 10;
     private static final int SETTINGS_SEGMENT_HEIGHT = 18;
     private static final int SETTINGS_SWATCH_SIZE = 16;
@@ -882,6 +882,17 @@ public final class AdvancementTrackerScreen extends Screen {
                 noDarknessRect.contains(mouseX, mouseY)
         );
         this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(noDarknessRect, SettingsAction.TOGGLE_NO_DARKNESS));
+
+        rowY += 20;
+        Rect fullbrightRect = new Rect(contentX, rowY, contentWidth, SETTINGS_TOGGLE_HEIGHT);
+        this.renderSettingsToggle(
+                guiGraphics,
+                fullbrightRect,
+                Component.translatable("screen.aaigttracker.settings.fullbright"),
+                AllAdvancementsIgtTrackerClient.isFullbrightEnabled(),
+                fullbrightRect.contains(mouseX, mouseY)
+        );
+        this.renderedSettingsActionHitboxes.add(SettingsActionHitbox.simple(fullbrightRect, SettingsAction.TOGGLE_FULLBRIGHT));
     }
 
     private void renderSettingsToggle(
@@ -912,6 +923,7 @@ public final class AdvancementTrackerScreen extends Screen {
             case SET_BACKGROUND -> AllAdvancementsIgtTrackerClient.setMenuBackgroundColor(hitbox.backgroundColor());
             case TOGGLE_NO_FOG -> AllAdvancementsIgtTrackerClient.toggleNoFog();
             case TOGGLE_NO_DARKNESS -> AllAdvancementsIgtTrackerClient.toggleNoDarkness();
+            case TOGGLE_FULLBRIGHT -> AllAdvancementsIgtTrackerClient.toggleFullbright();
         }
     }
 
@@ -2727,7 +2739,8 @@ public final class AdvancementTrackerScreen extends Screen {
         SET_VISIBILITY,
         SET_BACKGROUND,
         TOGGLE_NO_FOG,
-        TOGGLE_NO_DARKNESS
+        TOGGLE_NO_DARKNESS,
+        TOGGLE_FULLBRIGHT
     }
 
     private record SettingsActionHitbox(

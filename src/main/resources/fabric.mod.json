@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "aaigttracker",
   "version": "${version}",
-  "name": "All Advancements IGT Tracker",
+  "name": "All Advancements IGT Tracker (Practice)",
   "description": "A Fabric tracker UI for All Advancements speedruns with level-time timestamps.",
   "authors": [
     "Codex"
