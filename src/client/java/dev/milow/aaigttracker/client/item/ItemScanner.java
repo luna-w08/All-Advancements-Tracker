@@ -3,6 +3,7 @@ package dev.milow.aaigttracker.client.item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.Holder;
@@ -23,6 +24,10 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 final class ItemScanner {
     private static final int ITEM_SCAN_DEPTH_LIMIT = 8;
+    private IntegratedServer storageServer;
+    private UUID storagePlayer;
+    private CompletableFuture<List<ItemStack>> pendingStorage;
+    private List<ItemStack> cachedStorage;
 
     ItemScanResult scan() {
         ItemScanResult scanResult = new ItemScanResult();
@@ -51,28 +56,40 @@ final class ItemScanner {
         }
 
         UUID playerId = minecraft.player.getUUID();
-        try {
-            List<ItemStack> stacks = server.submit(() -> {
+        if (this.storageServer != server || !playerId.equals(this.storagePlayer)) {
+            this.storageServer = server;
+            this.storagePlayer = playerId;
+            this.pendingStorage = null;
+            this.cachedStorage = null;
+        }
+        if (this.pendingStorage != null && this.pendingStorage.isDone()) {
+            try {
+                this.cachedStorage = this.pendingStorage.join();
+            } catch (RuntimeException exception) {
+                this.cachedStorage = null;
+            }
+            this.pendingStorage = null;
+        }
+        if (this.pendingStorage == null) {
+            this.pendingStorage = server.submit(() -> {
                 ServerPlayer serverPlayer = server.getPlayerList().getPlayer(playerId);
                 if (serverPlayer == null) {
                     return List.<ItemStack>of();
                 }
-
                 List<ItemStack> copiedStacks = new ArrayList<>();
                 copyContainerStacks(serverPlayer.getInventory(), copiedStacks);
                 copyContainerStacks(serverPlayer.getEnderChestInventory(), copiedStacks);
                 return List.copyOf(copiedStacks);
-            }).join();
-            if (stacks.isEmpty()) {
-                return false;
-            }
-            for (ItemStack stack : stacks) {
-                this.scanItemStack(stack, scanResult, 0);
-            }
-            return true;
-        } catch (RuntimeException exception) {
+            });
+        }
+        // Use the last completed copy, or client storage initially. Never stall the render thread.
+        if (this.cachedStorage == null) {
             return false;
         }
+        for (ItemStack stack : this.cachedStorage) {
+            this.scanItemStack(stack, scanResult, 0);
+        }
+        return true;
     }
 
     private static void copyContainerStacks(Container container, List<ItemStack> stacks) {
