@@ -13,6 +13,7 @@ import dev.milow.aaigttracker.client.model.RequirementGroupSnapshot;
 import dev.milow.aaigttracker.client.model.WorldKey;
 import dev.milow.aaigttracker.client.ordering.AdvancementOrdering;
 import dev.milow.aaigttracker.client.timer.TimerReading;
+import dev.milow.aaigttracker.client.timer.CompletionTimeline;
 import dev.milow.aaigttracker.client.timer.TimerSource;
 import dev.milow.aaigttracker.client.visual.BiomeSpriteSpec;
 import dev.milow.aaigttracker.client.visual.CriterionIcon;
@@ -24,7 +25,7 @@ import dev.milow.aaigttracker.mixin.ClientAdvancementsAccessor;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Method;
-import java.time.Duration;
+import java.lang.ref.WeakReference;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementNode;
@@ -69,7 +71,10 @@ public final class AdvancementTrackerManager {
     private static final String SMITHING_TRIM_SUFFIX = "_smithing_trim";
     private static final String SMITHING_SUFFIX = "_smithing";
 
+    private static final long SNAPSHOT_INTERVAL_NANOS = 200_000_000L;
     private final TimerSource timerSource = new TimerSource();
+    private PendingCapture pendingCapture;
+    private long nextCaptureNanos;
     private final Map<WorldKey, WorldTrackerState> worldStates = new HashMap<>();
     private final Map<Identifier, Map<String, CriterionVisual>> criterionVisuals = new HashMap<>();
     private Method progressLookupMethod;
@@ -77,6 +82,7 @@ public final class AdvancementTrackerManager {
     private Component inactiveStatusMessage = Component.translatable("screen.aaigttracker.no_world");
 
     public void tick(Minecraft minecraft) {
+        this.publishCompletedCapture();
         if (minecraft.player == null) {
             this.currentWorldKey = null;
             this.inactiveStatusMessage = Component.translatable("screen.aaigttracker.no_world");
@@ -96,34 +102,68 @@ public final class AdvancementTrackerManager {
         this.inactiveStatusMessage = Component.empty();
 
         WorldTrackerState worldState = this.worldStates.computeIfAbsent(worldKey, ignored -> new WorldTrackerState());
-        worldState.lastTimer = this.timerSource.read(minecraft);
-        long currentTimerMillis = worldState.lastTimer.available() ? worldState.lastTimer.millis() : -1L;
-        Instant referenceInstant = Instant.now();
-        CompletionLocation currentLocation = CompletionLocation.fromPlayer(minecraft.player);
-        this.updateTimerSample(worldState, currentTimerMillis, referenceInstant);
-
-        try {
-            Map<Identifier, AdvancementSnapshot> rebuiltSnapshots = server != null
-                    ? server.submit(() -> this.collectSnapshots(server, playerId, worldState)).join()
-                    : this.collectClientSnapshots(minecraft, worldState);
-            this.recordCompletionLocations(worldState, rebuiltSnapshots, currentLocation);
-            worldState.snapshots.clear();
-            worldState.snapshots.putAll(rebuiltSnapshots);
-            worldState.statusMessage = rebuiltSnapshots.isEmpty()
-                    ? Component.translatable("screen.aaigttracker.empty")
-                    : Component.empty();
-        } catch (RuntimeException exception) {
-            AllAdvancementsIgtTracker.LOGGER.warn("Failed to capture advancement tracker snapshots", exception);
-            this.clearWorldState(worldState);
-            worldState.lastTimer = TimerReading.unavailable();
-            worldState.statusMessage = Component.translatable("screen.aaigttracker.load_failed");
+        if (this.pendingCapture != null || System.nanoTime() < this.nextCaptureNanos) {
+            return;
+        }
+        this.nextCaptureNanos = System.nanoTime() + SNAPSHOT_INTERVAL_NANOS;
+        CompletionLocation location = CompletionLocation.fromPlayer(minecraft.player);
+        if (server != null) {
+            // The client never waits for the integrated server, including while pausing/resuming.
+            CompletableFuture<CaptureResult> future = server.submit(() -> {
+                if (worldState.timerServer.get() != server) {
+                    worldState.timeline.startSession();
+                    worldState.timerServer = new WeakReference<>(server);
+                }
+                TimerReading timer = this.timerSource.read(server);
+                worldState.timeline.sample(Instant.now(), timer.millis());
+                return new CaptureResult(timer, this.collectSnapshots(server, playerId, worldState));
+            });
+            this.pendingCapture = new PendingCapture(worldState, location, future);
+        } else {
+            try {
+                this.publishCapture(worldState, location,
+                        new CaptureResult(TimerReading.multiplayerDisabled(), this.collectClientSnapshots(minecraft, worldState)));
+            } catch (RuntimeException exception) {
+                this.captureFailed(worldState, exception);
+            }
         }
     }
 
+    private void publishCompletedCapture() {
+        PendingCapture pending = this.pendingCapture;
+        if (pending == null || !pending.future().isDone()) {
+            return;
+        }
+        this.pendingCapture = null;
+        try {
+            this.publishCapture(pending.state(), pending.location(), pending.future().join());
+        } catch (RuntimeException exception) {
+            this.captureFailed(pending.state(), exception);
+        }
+    }
+
+    private void publishCapture(WorldTrackerState state, CompletionLocation location, CaptureResult result) {
+        // An unavailable player/connection during a transition is not revoked progress.
+        if (result.snapshots().isEmpty() && !state.snapshots.isEmpty()) {
+            return;
+        }
+        this.recordCompletionLocations(state, result.snapshots(), location);
+        state.snapshots.clear();
+        state.snapshots.putAll(result.snapshots());
+        state.sortedSnapshots = state.snapshots.values().stream().sorted(SNAPSHOT_ORDER).toList();
+        state.lastTimer = result.timer();
+        state.statusMessage = state.snapshots.isEmpty()
+                ? Component.translatable("screen.aaigttracker.empty") : Component.empty();
+    }
+
+    private void captureFailed(WorldTrackerState state, RuntimeException exception) {
+        AllAdvancementsIgtTracker.LOGGER.warn("Failed to capture advancement tracker snapshots; retaining previous progress", exception);
+        state.statusMessage = Component.translatable("screen.aaigttracker.load_failed");
+        this.nextCaptureNanos = System.nanoTime() + 1_000_000_000L;
+    }
+
     public List<AdvancementSnapshot> getSnapshots() {
-        return this.activeWorldState().snapshots.values().stream()
-                .sorted(SNAPSHOT_ORDER)
-                .toList();
+        return this.activeWorldState().sortedSnapshots;
     }
 
     public int getCompletedCount() {
@@ -179,14 +219,10 @@ public final class AdvancementTrackerManager {
             );
         }
 
-        CriterionTimeEstimator timeEstimator = CriterionTimeEstimator.create(
-                resolvedAdvancements,
-                worldState.lastAdvancingTimerSample
-        );
         for (ResolvedAdvancement resolvedAdvancement : resolvedAdvancements) {
             rebuiltSnapshots.put(
                     resolvedAdvancement.id(),
-                    this.buildSnapshot(resourceManager, resolvedAdvancement, timeEstimator, worldState)
+                    this.buildSnapshot(resourceManager, resolvedAdvancement, worldState)
             );
         }
 
@@ -223,14 +259,10 @@ public final class AdvancementTrackerManager {
             );
         }
 
-        CriterionTimeEstimator timeEstimator = CriterionTimeEstimator.create(
-                resolvedAdvancements,
-                worldState.lastAdvancingTimerSample
-        );
         for (ResolvedAdvancement resolvedAdvancement : resolvedAdvancements) {
             rebuiltSnapshots.put(
                     resolvedAdvancement.id(),
-                    this.buildSnapshot(resourceManager, resolvedAdvancement, timeEstimator, worldState)
+                    this.buildSnapshot(resourceManager, resolvedAdvancement, worldState)
             );
         }
 
@@ -283,7 +315,6 @@ public final class AdvancementTrackerManager {
     private AdvancementSnapshot buildSnapshot(
             ResourceManager resourceManager,
             ResolvedAdvancement resolvedAdvancement,
-            CriterionTimeEstimator timeEstimator,
             WorldTrackerState worldState
     ) {
         Identifier id = resolvedAdvancement.id();
@@ -302,7 +333,7 @@ public final class AdvancementTrackerManager {
             if (visual == null) {
                 visual = CriterionVisualResolver.decorate(id, criterion, this.fallbackCriterionVisual(id, criterion));
             }
-            Long criterionCompletionTime = this.criterionCompletionTime(worldState, id, criterion, progress, timeEstimator);
+            Long criterionCompletionTime = this.criterionCompletionTime(worldState, id, criterion, progress);
             criteriaByKey.put(criterion, new CriterionSnapshot(
                     criterion,
                     visual.displayName(),
@@ -710,28 +741,10 @@ public final class AdvancementTrackerManager {
     }
 
     private Long criterionCompletionTime(
-            WorldTrackerState worldState,
-            Identifier advancementId,
-            String criterion,
-            AdvancementProgress progress,
-            CriterionTimeEstimator timeEstimator
+            WorldTrackerState worldState, Identifier advancementId, String criterion, AdvancementProgress progress
     ) {
-        Instant obtainedAt = criterionObtained(progress, criterion);
-        if (obtainedAt == null) {
-            return null;
-        }
-
-        CriterionCacheKey cacheKey = new CriterionCacheKey(advancementId, criterion);
-        Long cachedTime = worldState.criterionCompletionTimes.get(cacheKey);
-        if (cachedTime != null) {
-            return cachedTime;
-        }
-
-        Long estimatedTime = timeEstimator.estimate(obtainedAt);
-        if (estimatedTime != null) {
-            worldState.criterionCompletionTimes.put(cacheKey, estimatedTime);
-        }
-        return estimatedTime;
+        return worldState.timeline.completionTime(new CriterionCacheKey(advancementId, criterion),
+                criterionObtained(progress, criterion));
     }
 
     private static Long latestKnownCompletionTime(Iterable<CriterionSnapshot> criteria) {
@@ -772,33 +785,6 @@ public final class AdvancementTrackerManager {
             worldState.completionLocations.put(advancementId, currentLocation);
             entry.setValue(snapshot.withCompletionLocation(currentLocation));
         }
-    }
-
-    private void updateTimerSample(WorldTrackerState worldState, long currentTimerMillis, Instant referenceInstant) {
-        if (currentTimerMillis < 0L || referenceInstant == null) {
-            return;
-        }
-
-        if (worldState.lastObservedTimerMillis != null && currentTimerMillis < worldState.lastObservedTimerMillis) {
-            this.clearTimingState(worldState);
-        }
-
-        if (worldState.lastAdvancingTimerSample == null || currentTimerMillis > worldState.lastAdvancingTimerSample.igtMillis()) {
-            worldState.lastAdvancingTimerSample = new TimeSample(referenceInstant, currentTimerMillis);
-        }
-
-        worldState.lastObservedTimerMillis = currentTimerMillis;
-    }
-
-    private void clearTimingState(WorldTrackerState worldState) {
-        worldState.criterionCompletionTimes.clear();
-        worldState.lastAdvancingTimerSample = null;
-        worldState.lastObservedTimerMillis = null;
-    }
-
-    private void clearWorldState(WorldTrackerState worldState) {
-        worldState.snapshots.clear();
-        this.clearTimingState(worldState);
     }
 
     private static Identifier recipeOutputIdentifier(Identifier recipeId) {
@@ -1174,100 +1160,24 @@ public final class AdvancementTrackerManager {
         AdvancementProgress resolve(AdvancementHolder holder, Advancement advancement);
     }
 
-    private static final class CriterionTimeEstimator {
-        private final List<TimeSample> samples;
+    private record CaptureResult(TimerReading timer, Map<Identifier, AdvancementSnapshot> snapshots) {}
 
-        private CriterionTimeEstimator(List<TimeSample> samples) {
-            this.samples = samples;
-        }
-
-        private static CriterionTimeEstimator create(List<ResolvedAdvancement> resolvedAdvancements, TimeSample liveTimerSample) {
-            List<TimeSample> samples = new ArrayList<>();
-            if (liveTimerSample != null) {
-                samples.add(liveTimerSample);
-            }
-
-            samples.sort(Comparator
-                    .comparing(TimeSample::instant)
-                    .thenComparingLong(TimeSample::igtMillis));
-            return new CriterionTimeEstimator(List.copyOf(samples));
-        }
-
-        private Long estimate(Instant criterionInstant) {
-            if (criterionInstant == null || this.samples.isEmpty()) {
-                return null;
-            }
-
-            if (this.samples.size() == 1) {
-                return estimateWithSegment(this.samples.get(0), this.samples.get(0), criterionInstant);
-            }
-
-            TimeSample previous = null;
-            for (TimeSample sample : this.samples) {
-                if (!sample.instant().isBefore(criterionInstant)) {
-                    if (previous == null) {
-                        return estimateWithSegment(sample, this.samples.get(1), criterionInstant);
-                    }
-
-                    return estimateWithSegment(previous, sample, criterionInstant);
-                }
-                previous = sample;
-            }
-
-            TimeSample last = this.samples.get(this.samples.size() - 1);
-            TimeSample beforeLast = this.samples.get(this.samples.size() - 2);
-            return estimateWithSegment(beforeLast, last, criterionInstant);
-        }
-
-        private static Long estimateWithSegment(TimeSample start, TimeSample end, Instant target) {
-            if (start == null || end == null || target == null) {
-                return null;
-            }
-
-            if (start.instant().equals(end.instant())) {
-                long deltaMillis = Duration.between(target, end.instant()).toMillis();
-                return Math.max(0L, end.igtMillis() - deltaMillis);
-            }
-
-            long segmentWallMillis = Duration.between(start.instant(), end.instant()).toMillis();
-            if (segmentWallMillis == 0L) {
-                return Math.max(0L, start.igtMillis());
-            }
-
-            long elapsedWallMillis = Duration.between(start.instant(), target).toMillis();
-            double ratio = elapsedWallMillis / (double) segmentWallMillis;
-            long estimate = Math.round(start.igtMillis() + ratio * (end.igtMillis() - start.igtMillis()));
-            return Math.max(0L, estimate);
-        }
-
-        private static Instant latestCriterionObtained(AdvancementProgress progress, Iterable<String> criteria) {
-            Instant latest = null;
-            for (String criterion : criteria) {
-                Instant obtained = criterionObtained(progress, criterion);
-                if (obtained != null && (latest == null || obtained.isAfter(latest))) {
-                    latest = obtained;
-                }
-            }
-            return latest;
-        }
-    }
+    private record PendingCapture(WorldTrackerState state, CompletionLocation location,
+                                  CompletableFuture<CaptureResult> future) {}
 
     private record CriterionCacheKey(Identifier advancementId, String criterionKey) {
-    }
-
-    private record TimeSample(Instant instant, long igtMillis) {
     }
 
     private static final class WorldTrackerState {
         private static final WorldTrackerState EMPTY = createEmpty();
 
         private final Map<Identifier, AdvancementSnapshot> snapshots = new HashMap<>();
-        private final Map<CriterionCacheKey, Long> criterionCompletionTimes = new HashMap<>();
+        private final CompletionTimeline<CriterionCacheKey> timeline = new CompletionTimeline<>();
+        private WeakReference<IntegratedServer> timerServer = new WeakReference<>(null);
+        private List<AdvancementSnapshot> sortedSnapshots = List.of();
         private final Map<Identifier, CompletionLocation> completionLocations = new HashMap<>();
         private TimerReading lastTimer = TimerReading.unavailable();
         private Component statusMessage = Component.translatable("screen.aaigttracker.empty");
-        private TimeSample lastAdvancingTimerSample;
-        private Long lastObservedTimerMillis;
 
         private static WorldTrackerState createEmpty() {
             WorldTrackerState state = new WorldTrackerState();

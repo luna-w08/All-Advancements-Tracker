@@ -168,6 +168,7 @@ public final class AdvancementTrackerScreen extends Screen {
     private long currentRenderMillis;
     private Identifier requirementScrollAdvancementId;
     private int requirementScrollOffset;
+    private long nextDataRefreshNanos;
     private List<AdvancementSnapshot> cachedEntries = List.of();
     private List<ItemProgressSnapshot> cachedItemEntries = List.of();
     private List<WaypointSnapshot> cachedWaypoints = List.of();
@@ -220,7 +221,7 @@ public final class AdvancementTrackerScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.biomeSpriteLoadsThisFrame = 0;
-        this.refreshData();
+        this.refreshData(false);
         this.currentRenderMillis = System.currentTimeMillis();
         this.extractTransparentBackground(guiGraphics);
         MenuBackgroundColor backgroundColor = this.menuBackgroundColor();
@@ -600,7 +601,16 @@ public final class AdvancementTrackerScreen extends Screen {
     }
 
     private void refreshData() {
-        this.cachedEntries = this.trackerManager.getSnapshots();
+        this.refreshData(true);
+    }
+
+    private void refreshData(boolean force) {
+        List<AdvancementSnapshot> snapshots = this.trackerManager.getSnapshots();
+        if (!force && this.cachedEntries == snapshots && System.nanoTime() < this.nextDataRefreshNanos) {
+            return;
+        }
+        this.nextDataRefreshNanos = System.nanoTime() + 200_000_000L;
+        this.cachedEntries = snapshots;
         this.refreshItemEntries(false);
         this.cachedWaypoints = this.waypointService.waypoints(this.currentWorldKey());
         this.cachedTabs = this.buildTabs(
