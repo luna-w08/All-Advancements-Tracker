@@ -37,6 +37,21 @@ processResources {
 tasks.withType(JavaCompile).configureEach {
     it.options.release = 25
 }
+
+def regressionClasses = layout.buildDirectory.dir('classes/java/trackerVerification')
+tasks.register('compileTrackerVerification', JavaCompile) {
+    dependsOn tasks.named('clientClasses')
+    source = fileTree('src/verification/java') { include '**/*.java' }
+    classpath = sourceSets.client.runtimeClasspath
+    destinationDirectory = regressionClasses
+}
+tasks.register('verifyTrackerRegressions', JavaExec) {
+    dependsOn tasks.named('compileTrackerVerification')
+    classpath = files(regressionClasses) + sourceSets.client.runtimeClasspath
+    mainClass = 'dev.milow.aaigttracker.verification.TrackerRegressions'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(25) }
+}
+tasks.named('check') { dependsOn tasks.named('verifyTrackerRegressions') }
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
