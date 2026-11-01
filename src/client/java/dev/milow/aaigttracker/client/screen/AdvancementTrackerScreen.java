@@ -214,6 +214,7 @@ public final class AdvancementTrackerScreen extends Screen {
 
     @Override
     public void removed() {
+        this.minecraft.textInputManager().stopTextInput(this);
         this.rememberCurrentState();
         this.restoreDebugOverlay();
         super.removed();
@@ -428,6 +429,7 @@ public final class AdvancementTrackerScreen extends Screen {
         if (this.waypointInputOverlay != null) {
             if (key == InputConstants.KEY_ESCAPE) {
                 this.waypointInputOverlay = null;
+                this.minecraft.textInputManager().stopTextInput(this);
                 return true;
             }
             if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
@@ -493,6 +495,11 @@ public final class AdvancementTrackerScreen extends Screen {
         }
 
         return super.charTyped(event);
+    }
+
+    @Override
+    public boolean isInputCaptured() {
+        return this.waypointInputOverlay != null || super.isInputCaptured();
     }
 
     @Override
@@ -2193,6 +2200,7 @@ public final class AdvancementTrackerScreen extends Screen {
     private void activateWaypointAction(WaypointAction action, Identifier waypointId) {
         if (action == WaypointAction.ADD) {
             this.waypointInputOverlay = new WaypointInputOverlay(WaypointInputMode.ADD, null, "");
+            this.minecraft.textInputManager().startTextInput(this);
             return;
         }
 
@@ -2200,6 +2208,7 @@ public final class AdvancementTrackerScreen extends Screen {
             WaypointSnapshot waypoint = this.findWaypoint(waypointId);
             if (waypoint != null) {
                 this.waypointInputOverlay = new WaypointInputOverlay(WaypointInputMode.RENAME, waypointId, waypoint.label());
+                this.minecraft.textInputManager().startTextInput(this);
             }
             return;
         }
@@ -2253,6 +2262,7 @@ public final class AdvancementTrackerScreen extends Screen {
 
         WaypointInputOverlay overlay = this.waypointInputOverlay;
         this.waypointInputOverlay = null;
+        this.minecraft.textInputManager().stopTextInput(this);
         if (overlay.mode() == WaypointInputMode.ADD) {
             WaypointSnapshot created = this.waypointService.createAtPlayer(
                     this.currentWorldKey(),
@@ -2284,6 +2294,7 @@ public final class AdvancementTrackerScreen extends Screen {
         int inputX = panelX + 14;
         int inputY = panelY + 42;
         int inputWidth = panelWidth - 28;
+        this.minecraft.textInputManager().setTextInputArea(inputX, inputY, inputX + inputWidth, inputY + 20);
         Component title = overlay.mode() == WaypointInputMode.ADD
                 ? Component.translatable("screen.aaigttracker.waypoints.add_title")
                 : Component.translatable("screen.aaigttracker.waypoints.rename_title");
